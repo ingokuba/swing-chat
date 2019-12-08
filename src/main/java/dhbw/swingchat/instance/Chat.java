@@ -1,10 +1,10 @@
 package dhbw.swingchat.instance;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
+
+import com.google.gson.annotations.Expose;
 
 import dhbw.swingchat.ChangeMode;
 
@@ -14,25 +14,17 @@ import dhbw.swingchat.ChangeMode;
 public class Chat extends Observable
 {
 
-    private Map<String, User> users  = new HashMap<>();
-    private List<Group>       groups = new ArrayList<>();
-
-    /**
-     * Checks whether user with a given name exists.
-     * 
-     * @return true if it <b>doesn't</b> exist
-     */
-    public boolean absent(String name)
-    {
-        return users.get(name) == null;
-    }
+    @Expose
+    private List<User>  users  = new ArrayList<>();
+    @Expose
+    private List<Group> groups = new ArrayList<>();
 
     /**
      * Adds a new user to the collection.
      */
     public Chat addUser(User user)
     {
-        if (users.putIfAbsent(user.getName(), user) == null) {
+        if (!users.contains(user) && users.add(user)) {
             setChanged();
             notifyObservers(ChangeMode.USER);
         }
@@ -44,16 +36,26 @@ public class Chat extends Observable
      */
     public Chat removeUser(User user)
     {
-        if (users.remove(user.getName()) != null) {
+        if (users.remove(user)) {
             setChanged();
             notifyObservers(ChangeMode.USER);
         }
         return this;
     }
 
-    public Map<String, User> getUsers()
+    public List<User> getUsers()
     {
         return users;
+    }
+
+    public User getUser(String name)
+    {
+        for (User user : users) {
+            if (user.getName().equals(name)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     /**
@@ -62,7 +64,7 @@ public class Chat extends Observable
     public Chat message(String message, String... usernames)
     {
         for (String username : usernames) {
-            users.get(username).message(message);
+            getUser(username).message(message);
         }
         return this;
     }
@@ -83,6 +85,11 @@ public class Chat extends Observable
             notifyObservers(ChangeMode.GROUP);
         }
         return this;
+    }
+
+    public void setGroups(List<Group> groups)
+    {
+        this.groups = groups;
     }
 
     public List<Group> getGroups()

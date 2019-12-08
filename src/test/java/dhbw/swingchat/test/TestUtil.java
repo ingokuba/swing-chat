@@ -1,6 +1,9 @@
 package dhbw.swingchat.test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class TestUtil
 {
@@ -47,6 +50,18 @@ public class TestUtil
             return clazz.getDeclaredField(field);
         } catch (NoSuchFieldException e) {
             return null;
+        }
+    }
+
+    /**
+     * Delete chat file.
+     */
+    public static void clearStorage()
+    {
+        try {
+            Files.delete(Paths.get("Chat.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

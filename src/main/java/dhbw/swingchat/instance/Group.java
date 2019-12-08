@@ -1,17 +1,28 @@
 package dhbw.swingchat.instance;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
+
+import com.google.gson.annotations.Expose;
 
 public class Group
 {
 
+    @Expose
     private String     name;
+    @Expose
     private List<User> users;
 
     public Group(String name, List<User> users)
     {
         this.name = name;
         this.users = users;
+    }
+
+    public Group(String name, User... users)
+    {
+        this(name, asList(users));
     }
 
     public String getName()
@@ -33,7 +44,7 @@ public class Group
      */
     public boolean contains(User user)
     {
-        return users.contains(user);
+        return contains(user.getName());
     }
 
     public boolean contains(String name)

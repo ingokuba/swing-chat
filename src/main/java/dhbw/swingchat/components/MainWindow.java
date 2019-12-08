@@ -1,5 +1,7 @@
 package dhbw.swingchat.components;
 
+import static dhbw.swingchat.storage.Storage.loadChat;
+import static dhbw.swingchat.storage.Storage.storeChat;
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 
 import java.awt.GridLayout;
@@ -33,6 +35,13 @@ public class MainWindow extends JFrame
 
     public MainWindow()
     {
+        Chat loadedChat = loadChat();
+        if (loadedChat != null) {
+            chat = loadedChat;
+            for (User user : chat.getUsers()) {
+                chatWindows.add(new ChatWindow(user, chat));
+            }
+        }
         add(new JLabel("Username"));
         addNameInput();
         addButton();
@@ -45,6 +54,7 @@ public class MainWindow extends JFrame
             @Override
             public void windowClosing(WindowEvent e)
             {
+                storeChat(chat);
                 for (ChatWindow chatWindow : chatWindows) {
                     chatWindow.dispatchEvent(new WindowEvent(chatWindow, WINDOW_CLOSING));
                 }
@@ -90,7 +100,7 @@ public class MainWindow extends JFrame
         {
             String name = username.getText();
             if (!name.isEmpty()) {
-                if (chat.absent(name)) {
+                if (chat.getUser(name) == null) {
                     User user = new User(name);
                     chat.addUser(user);
                     chatWindows.add(new ChatWindow(user, chat));
