@@ -132,7 +132,7 @@ public class MainWindowIT
 
         mainWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
-        WindowFinder.findFrame("testName2").using(mainWindow.robot()).radioButton().requireVisible();
+        WindowFinder.findFrame("testName2").using(mainWindow.robot()).button("Groupie").requireVisible();
     }
 
     @Test

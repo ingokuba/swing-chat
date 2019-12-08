@@ -36,6 +36,16 @@ public class Group
         return users.contains(user);
     }
 
+    public boolean contains(String name)
+    {
+        for (User user : users) {
+            if (user.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isEmpty()
     {
         return users.isEmpty();
