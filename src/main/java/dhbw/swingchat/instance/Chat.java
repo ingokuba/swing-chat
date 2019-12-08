@@ -25,12 +25,25 @@ public class Chat extends Observable
     /**
      * Adds a new user to the collection.
      */
-    public void add(User user)
+    public Chat add(User user)
     {
         if (users.putIfAbsent(user.getName(), user) == null) {
             setChanged();
             notifyObservers();
         }
+        return this;
+    }
+
+    /**
+     * Remove a user from the collection.
+     */
+    public Chat remove(User user)
+    {
+        if (users.remove(user.getName()) != null) {
+            setChanged();
+            notifyObservers();
+        }
+        return this;
     }
 
     public Map<String, User> getUsers()
@@ -41,10 +54,11 @@ public class Chat extends Observable
     /**
      * Message all users specified by the given names.
      */
-    public void message(String message, String... usernames)
+    public Chat message(String message, String... usernames)
     {
         for (String username : usernames) {
             users.get(username).message(message);
         }
+        return this;
     }
 }
