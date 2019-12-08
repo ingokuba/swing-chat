@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dhbw.swingchat.test.TestObserver;
+
 /**
  * Unit tests for the {@link Chat} object.
  */
@@ -81,5 +83,30 @@ public class ChatTest
 
         User existing = chat.getUsers().get("test");
         assertThat(existing.getMessages(), hasItem("msgTest"));
+    }
+
+    @Test
+    public void should_notify_observer_when_user_added()
+    {
+        TestObserver observer = new TestObserver(Chat.class);
+        chat.addObserver(observer);
+
+        chat.add(new User("test"));
+
+        assertTrue(observer.getCalled());
+    }
+
+    @Test
+    public void should_notify_observer_when_user_removed()
+    {
+        User user = new User("test");
+        chat.add(user);
+        TestObserver observer = new TestObserver(Chat.class);
+        chat.addObserver(observer);
+        assertFalse(observer.getCalled());
+
+        chat.remove(user);
+
+        assertTrue(observer.getCalled());
     }
 }

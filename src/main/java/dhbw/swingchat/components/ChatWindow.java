@@ -1,5 +1,7 @@
 package dhbw.swingchat.components;
 
+import static javax.swing.JOptionPane.showInputDialog;
+
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -11,14 +13,18 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractAction;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import dhbw.swingchat.instance.Chat;
+import dhbw.swingchat.instance.Group;
 import dhbw.swingchat.instance.User;
 
 /**
@@ -33,6 +39,7 @@ public class ChatWindow extends JFrame
     private Chat              chat;
 
     private JPanel            userPanel;
+    private JPanel            groupPanel;
     private JList<String>     messageList;
 
     public ChatWindow(User user, Chat chat)
@@ -44,6 +51,29 @@ public class ChatWindow extends JFrame
         userPanel = new JPanel();
         updateUsers();
         add(userPanel);
+        JButton addGroup = new JButton("New group");
+        addGroup.setAction(new AbstractAction() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                List<User> selectedUsers = getSelectedUsers();
+                if (selectedUsers.isEmpty()) {
+                    return;
+                }
+                String groupName = showInputDialog("Enter group name");
+                if (groupName.isEmpty()) {
+                    return;
+                }
+                new Group(groupName, selectedUsers);
+            }
+        });
+        add(addGroup);
+        groupPanel = new JPanel();
+        updateGroups();
+        add(groupPanel);
         messageList = new JList<>();
         updateMessageList();
         messageList.setName("messages");
@@ -52,7 +82,7 @@ public class ChatWindow extends JFrame
         addUserInput();
         setName(user.getName());
         setSize(500, 500);
-        setLayout(new GridLayout(3, 1));
+        setLayout(new GridLayout(5, 1));
         setVisible(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -61,6 +91,8 @@ public class ChatWindow extends JFrame
             public void windowClosing(WindowEvent e)
             {
                 chat.remove(user);
+                user.getGroups().forEach(group -> group.remove(user));
+                super.windowClosing(e);
             }
         });
     }
@@ -71,6 +103,16 @@ public class ChatWindow extends JFrame
             JCheckBox box = new JCheckBox(name, true);
             box.setName(name);
             userPanel.add(box);
+        });
+    }
+
+    private void updateGroups()
+    {
+        ButtonGroup groupButtons = new ButtonGroup();
+        user.getGroups().forEach(group -> {
+            JRadioButton groupButton = new JRadioButton(group.getName(), false);
+            groupButtons.add(groupButton);
+            groupPanel.add(groupButton);
         });
     }
 
@@ -110,13 +152,30 @@ public class ChatWindow extends JFrame
      */
     private void message(String message)
     {
-        chat.message(user.getName() + ": " + message, getSelectedUsers());
+        chat.message(user.getName() + ": " + message, getSelectedUserNames());
     }
 
     /**
      * Return all selected users from the check boxes.
      */
-    private String[] getSelectedUsers()
+    private List<User> getSelectedUsers()
+    {
+        List<User> users = new ArrayList<>();
+        for (Component component : userPanel.getComponents()) {
+            if (component instanceof JCheckBox) {
+                JCheckBox box = (JCheckBox)component;
+                if (box.isSelected()) {
+                    users.add(chat.getUsers().get(box.getText()));
+                }
+            }
+        }
+        return users;
+    }
+
+    /**
+     * Return the names of all selected users from the check boxes.
+     */
+    private String[] getSelectedUserNames()
     {
         List<String> names = new ArrayList<>();
         for (Component component : userPanel.getComponents()) {
@@ -135,7 +194,7 @@ public class ChatWindow extends JFrame
     {
 
         @Override
-        public void update(Observable observableChat, Object arg1)
+        public void update(Observable o, Object obj)
         {
             userPanel.setVisible(false);
             userPanel.removeAll();
@@ -149,9 +208,21 @@ public class ChatWindow extends JFrame
     {
 
         @Override
-        public void update(Observable observableUser, Object arg1)
+        public void update(Observable o, Object obj)
         {
-            updateMessageList();
+            if (obj instanceof User.ChangeMode) {
+                switch ((User.ChangeMode)obj) {
+                case MESSAGE:
+                    updateMessageList();
+                    break;
+                case GROUP:
+                    groupPanel.setVisible(false);
+                    groupPanel.removeAll();
+                    updateGroups();
+                    groupPanel.setVisible(true);
+                    break;
+                }
+            }
         }
     }
 }
