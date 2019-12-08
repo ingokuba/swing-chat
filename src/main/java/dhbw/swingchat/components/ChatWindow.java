@@ -43,11 +43,11 @@ public class ChatWindow extends JFrame
     private JPanel            groupPanel;
     private JList<String>     messageList;
 
-    public ChatWindow(User user, Chat chat)
+    public ChatWindow(User user1, Chat chat1)
     {
-        this.user = user;
+        this.user = user1;
         this.user.addObserver(new ChatObserver());
-        this.chat = chat;
+        this.chat = chat1;
         this.chat.addObserver(new ChatObserver());
         userPanel = new JPanel();
         updateUsers();
@@ -92,7 +92,9 @@ public class ChatWindow extends JFrame
             public void windowClosing(WindowEvent e)
             {
                 chat.removeUser(user);
-                chat.getGroups().forEach(group -> {
+                List<Group> copy = new ArrayList<>();
+                copy.addAll(chat.getGroups());
+                copy.forEach(group -> {
                     group.remove(user);
                     if (group.isEmpty()) {
                         chat.removeGroup(group);
