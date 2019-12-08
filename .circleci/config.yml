@@ -18,4 +18,4 @@ jobs:
             paths:
             - ~/.m2
             key: v1-dependencies-{{ checksum "pom.xml" }}
-      -  run: mvn integration-test
+      -  run: mvn verify
