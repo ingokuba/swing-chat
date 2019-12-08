@@ -12,6 +12,7 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -39,6 +40,7 @@ public class MainWindowIT
     }
 
     @Test
+    @Disabled("Hard to test, because System.exit is called")
     public void should_close_window()
     {
         mainWindow.requireVisible();

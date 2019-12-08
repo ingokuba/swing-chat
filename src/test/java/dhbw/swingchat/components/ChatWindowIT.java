@@ -1,5 +1,7 @@
 package dhbw.swingchat.components;
 
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -21,7 +23,7 @@ public class ChatWindowIT
     private FrameFixture chatWindow;
 
     private User         user = new User("Chatter");
-    private Chat         chat = new Chat();
+    private Chat         chat = new Chat().add(user);
 
     @BeforeEach
     public void setup()
@@ -41,5 +43,15 @@ public class ChatWindowIT
     public void should_have_username()
     {
         assertThat(chatWindow.target().getName(), is(user.getName()));
+    }
+
+    @Test
+    public void should_remove_user_on_close()
+    {
+        assertThat(chat.getUsers(), aMapWithSize(1));
+
+        chatWindow.close();
+
+        assertThat(chat.getUsers(), anEmptyMap());
     }
 }

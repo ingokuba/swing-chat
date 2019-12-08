@@ -1,7 +1,11 @@
 package dhbw.swingchat.components;
 
+import static java.awt.event.WindowEvent.WINDOW_CLOSING;
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +39,18 @@ public class MainWindow extends JFrame
         setSize(220, 125);
         setLayout(new GridLayout(3, 1));
         setVisible(true);
-        // TODO close all open chat windows
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                for (ChatWindow chatWindow : chatWindows) {
+                    chatWindow.dispatchEvent(new WindowEvent(chatWindow, WINDOW_CLOSING));
+                }
+                super.windowClosing(e);
+            }
+        });
     }
 
     /**

@@ -2,6 +2,8 @@ package dhbw.swingchat.components;
 
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -40,7 +42,15 @@ public class ChatWindow extends JFrame
         setSize(500, 500);
         setLayout(new GridLayout(3, 1));
         setVisible(true);
-        // TODO: remove user on close
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                chat.remove(user);
+            }
+        });
     }
 
     private void updateUsers()
