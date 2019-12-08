@@ -147,7 +147,7 @@ public class MainWindowIT
         mainWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         WindowFinder.findFrame("testName2").using(mainWindow.robot()).close();
-        Group groupie = component.getChat().getUsers().get("testName1").getGroups().get(0);
+        Group groupie = component.getChat().getGroups().get(0);
         List<User> users = (List<User>)getFieldValue(groupie, "users");
         assertThat(users, hasSize(1));
     }

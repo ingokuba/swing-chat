@@ -36,7 +36,7 @@ public class ChatWindowIT
     private FrameFixture chatWindow;
 
     private User         user = new User("Chatter");
-    private Chat         chat = new Chat().add(user);
+    private Chat         chat = new Chat().addUser(user);
 
     @BeforeEach
     public void setup()
@@ -96,7 +96,7 @@ public class ChatWindowIT
 
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
-        assertThat(user.getGroups(), hasSize(1));
+        assertThat(chat.getGroups(), hasSize(1));
         JRadioButton groupButton = finderWithCurrentAwtHierarchy().findByType(JRadioButton.class);
         assertTrue(groupButton.isVisible());
         assertThat(groupButton.getText(), is("Groupie"));
@@ -110,7 +110,7 @@ public class ChatWindowIT
         Assertions.assertThrows(WaitTimedOutError.class, () -> {
             WindowFinder.findDialog(JDialog.class).withTimeout(100).using(chatWindow.robot());
         });
-        assertThat(user.getGroups(), hasSize(0));
+        assertThat(chat.getGroups(), hasSize(0));
     }
 
     @Test
@@ -121,6 +121,18 @@ public class ChatWindowIT
 
         chatWindow.dialog().textBox().pressAndReleaseKeys(VK_ENTER);
 
-        assertThat(user.getGroups(), hasSize(0));
+        assertThat(chat.getGroups(), hasSize(0));
+    }
+
+    @Test
+    public void should_remove_group_on_close()
+    {
+        chatWindow.button().click();
+        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
+        assertThat(chat.getGroups(), hasSize(1));
+
+        chatWindow.close();
+
+        assertThat(chat.getGroups(), hasSize(0));
     }
 }

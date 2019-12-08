@@ -3,13 +3,18 @@ package dhbw.swingchat.instance;
 import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dhbw.swingchat.ChangeMode;
 import dhbw.swingchat.test.TestObserver;
 
 /**
@@ -41,7 +46,7 @@ public class ChatTest
     @Test
     public void should_return_false_for_existing_user()
     {
-        chat.add(new User("test"));
+        chat.addUser(new User("test"));
 
         assertFalse(chat.absent("test"));
     }
@@ -50,7 +55,7 @@ public class ChatTest
     public void should_message_user()
     {
         User user = new User("test");
-        chat.add(user);
+        chat.addUser(user);
 
         chat.message("msgTest", "test");
 
@@ -61,9 +66,9 @@ public class ChatTest
     public void should_only_message_given_user()
     {
         User user1 = new User("test1");
-        chat.add(user1);
+        chat.addUser(user1);
         User user2 = new User("test2");
-        chat.add(user2);
+        chat.addUser(user2);
 
         chat.message("msgTest", "test1");
 
@@ -75,11 +80,11 @@ public class ChatTest
     public void should_not_put_duplicate_user()
     {
         User user1 = new User("test");
-        chat.add(user1);
+        chat.addUser(user1);
         chat.message("msgTest", "test");
 
         User user2 = new User("test");
-        chat.add(user2);
+        chat.addUser(user2);
 
         User existing = chat.getUsers().get("test");
         assertThat(existing.getMessages(), hasItem("msgTest"));
@@ -91,7 +96,7 @@ public class ChatTest
         TestObserver observer = new TestObserver(Chat.class);
         chat.addObserver(observer);
 
-        chat.add(new User("test"));
+        chat.addUser(new User("test"));
 
         assertTrue(observer.getCalled());
     }
@@ -100,13 +105,28 @@ public class ChatTest
     public void should_notify_observer_when_user_removed()
     {
         User user = new User("test");
-        chat.add(user);
+        chat.addUser(user);
         TestObserver observer = new TestObserver(Chat.class);
         chat.addObserver(observer);
         assertFalse(observer.getCalled());
 
-        chat.remove(user);
+        chat.removeUser(user);
 
         assertTrue(observer.getCalled());
+    }
+
+    @Test
+    public void should_notify_observer_when_group_added()
+    {
+        TestObserver observer = new TestObserver(Chat.class);
+        chat.addObserver(observer);
+        List<User> users = new ArrayList<>();
+        users.add(new User("test"));
+        assertFalse(observer.getCalled());
+
+        chat.addGroup(new Group("Admins", users));
+
+        assertTrue(observer.getCalled());
+        assertThat(observer.getObject(), is(ChangeMode.GROUP));
     }
 }
