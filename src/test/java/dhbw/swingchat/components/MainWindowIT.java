@@ -27,9 +27,8 @@ public class MainWindowIT
     @BeforeEach
     public void setup()
     {
-        component = new MainWindow();
-        MainWindow frame = GuiActionRunner.execute(() -> component);
-        mainWindow = new FrameFixture(frame);
+        component = GuiActionRunner.execute(() -> new MainWindow());
+        mainWindow = new FrameFixture(component);
         mainWindow.show();
     }
 
