@@ -2,6 +2,7 @@ package dhbw.swingchat.components;
 
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -9,9 +10,13 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.AbstractAction;
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.User;
@@ -20,7 +25,6 @@ import dhbw.swingchat.instance.User;
  * Chat window for a specific user.
  */
 public class ChatWindow extends JFrame
-    implements Observer
 {
 
     private static final long serialVersionUID = 1L;
@@ -29,15 +33,23 @@ public class ChatWindow extends JFrame
     private Chat              chat;
 
     private JPanel            userPanel;
+    private JList<String>     messageList;
 
     public ChatWindow(User user, Chat chat)
     {
         this.user = user;
+        this.user.addObserver(new UserObserver());
         this.chat = chat;
-        this.chat.addObserver(this);
+        this.chat.addObserver(new ChatObserver());
         userPanel = new JPanel();
         updateUsers();
         add(userPanel);
+        messageList = new JList<>();
+        updateMessageList();
+        messageList.setName("messages");
+        messageList.setSize(500, 1000);
+        add(messageList);
+        addUserInput();
         setName(user.getName());
         setSize(500, 500);
         setLayout(new GridLayout(3, 1));
@@ -62,11 +74,41 @@ public class ChatWindow extends JFrame
         });
     }
 
+    private void updateMessageList()
+    {
+        DefaultListModel<String> model = new DefaultListModel<>();
+        for (String message : user.getMessages()) {
+            model.addElement(message);
+        }
+        messageList.setModel(model);
+    }
+
+    private void addUserInput()
+    {
+        JTextField userInput = new JTextField();
+        userInput.setName("userInput");
+        userInput.setSize(200, 30);
+        userInput.setAction(new AbstractAction() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String message = userInput.getText();
+                if (!message.isEmpty()) {
+                    message(message);
+                }
+            }
+        });
+        add(userInput);
+    }
+
     /**
      * Message all selected users with the entered message.
      * Prefixes the message with the username of this window.
      */
-    public void message(String message)
+    private void message(String message)
     {
         chat.message(user.getName() + ": " + message, getSelectedUsers());
     }
@@ -88,13 +130,28 @@ public class ChatWindow extends JFrame
         return names.toArray(new String[0]);
     }
 
-    @Override
-    public void update(Observable observableChat, Object arg1)
+    private class ChatObserver
+        implements Observer
     {
-        this.chat = (Chat)observableChat;
-        userPanel.setVisible(false);
-        userPanel.removeAll();
-        updateUsers();
-        userPanel.setVisible(true);
+
+        @Override
+        public void update(Observable observableChat, Object arg1)
+        {
+            userPanel.setVisible(false);
+            userPanel.removeAll();
+            updateUsers();
+            userPanel.setVisible(true);
+        }
+    }
+
+    private class UserObserver
+        implements Observer
+    {
+
+        @Override
+        public void update(Observable observableUser, Object arg1)
+        {
+            updateMessageList();
+        }
     }
 }
