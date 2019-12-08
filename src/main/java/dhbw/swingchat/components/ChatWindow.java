@@ -20,7 +20,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import dhbw.swingchat.ChangeMode;
@@ -119,8 +118,25 @@ public class ChatWindow extends JFrame
         ButtonGroup groupButtons = new ButtonGroup();
         chat.getGroups().forEach(group -> {
             if (group.contains(user)) {
-                JRadioButton groupButton = new JRadioButton(group.getName(), false);
+                JButton groupButton = new JButton(group.getName());
+                groupButton.setSize(50, 50);
+                groupButton.setName(group.getName());
                 groupButtons.add(groupButton);
+                groupButton.setAction(new AbstractAction() {
+
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        for (Component component : userPanel.getComponents()) {
+                            if (component instanceof JCheckBox) {
+                                JCheckBox box = (JCheckBox)component;
+                                box.setSelected(group.contains(box.getText()));
+                            }
+                        }
+                    }
+                });
                 groupPanel.add(groupButton);
             }
         });

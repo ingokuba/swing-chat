@@ -1,18 +1,14 @@
 package dhbw.swingchat.components;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
-import static org.assertj.swing.core.BasicComponentFinder.finderWithCurrentAwtHierarchy;
 import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JRadioButton;
 
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.exception.WaitTimedOutError;
@@ -36,7 +32,7 @@ public class ChatWindowIT
     private FrameFixture chatWindow;
 
     private User         user = new User("Chatter");
-    private Chat         chat = new Chat().addUser(user);
+    private Chat         chat = new Chat().addUser(user).addUser(new User("Second"));
 
     @BeforeEach
     public void setup()
@@ -61,11 +57,11 @@ public class ChatWindowIT
     @Test
     public void should_remove_user_on_close()
     {
-        assertThat(chat.getUsers(), aMapWithSize(1));
+        assertThat(chat.getUsers(), aMapWithSize(2));
 
         chatWindow.close();
 
-        assertThat(chat.getUsers(), anEmptyMap());
+        assertThat(chat.getUsers(), aMapWithSize(1));
     }
 
     @Test
@@ -82,7 +78,7 @@ public class ChatWindowIT
     @Test
     public void should_not_add_message_to_list_for_deselected_user()
     {
-        chatWindow.checkBox().uncheck();
+        chatWindow.checkBox("Chatter").uncheck();
 
         chatWindow.textBox("userInput").enterText("Test message").pressAndReleaseKeys(VK_ENTER);
 
@@ -97,15 +93,14 @@ public class ChatWindowIT
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         assertThat(chat.getGroups(), hasSize(1));
-        JRadioButton groupButton = finderWithCurrentAwtHierarchy().findByType(JRadioButton.class);
-        assertTrue(groupButton.isVisible());
-        assertThat(groupButton.getText(), is("Groupie"));
+        chatWindow.button("Groupie").requireVisible();
     }
 
     @Test
     public void should_not_create_group_without_users()
     {
-        chatWindow.checkBox().uncheck();
+        chatWindow.checkBox("Chatter").uncheck();
+        chatWindow.checkBox("Second").uncheck();
         chatWindow.button().click();
         Assertions.assertThrows(WaitTimedOutError.class, () -> {
             WindowFinder.findDialog(JDialog.class).withTimeout(100).using(chatWindow.robot());
@@ -127,6 +122,7 @@ public class ChatWindowIT
     @Test
     public void should_remove_group_on_close()
     {
+        chatWindow.checkBox("Second").click();
         chatWindow.button().click();
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
         assertThat(chat.getGroups(), hasSize(1));
@@ -134,5 +130,19 @@ public class ChatWindowIT
         chatWindow.close();
 
         assertThat(chat.getGroups(), hasSize(0));
+    }
+
+    @Test
+    public void should_select_users_in_group()
+    {
+        chatWindow.checkBox("Second").click();
+        chatWindow.button().click();
+        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
+
+        chatWindow.checkBox("Chatter").click();
+        chatWindow.button("Groupie").click();
+
+        chatWindow.checkBox("Chatter").requireSelected();
+        chatWindow.checkBox("Second").requireNotSelected();
     }
 }
