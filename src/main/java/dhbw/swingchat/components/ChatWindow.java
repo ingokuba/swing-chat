@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import dhbw.swingchat.ChangeMode;
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.Group;
 import dhbw.swingchat.instance.User;
@@ -45,7 +46,7 @@ public class ChatWindow extends JFrame
     public ChatWindow(User user, Chat chat)
     {
         this.user = user;
-        this.user.addObserver(new UserObserver());
+        this.user.addObserver(new ChatObserver());
         this.chat = chat;
         this.chat.addObserver(new ChatObserver());
         userPanel = new JPanel();
@@ -64,10 +65,10 @@ public class ChatWindow extends JFrame
                     return;
                 }
                 String groupName = showInputDialog("Enter group name");
-                if (groupName.isEmpty()) {
+                if (groupName == null || groupName.isEmpty()) {
                     return;
                 }
-                new Group(groupName, selectedUsers);
+                chat.addGroup(new Group(groupName, selectedUsers));
             }
         });
         add(addGroup);
@@ -90,8 +91,13 @@ public class ChatWindow extends JFrame
             @Override
             public void windowClosing(WindowEvent e)
             {
-                chat.remove(user);
-                user.getGroups().forEach(group -> group.remove(user));
+                chat.removeUser(user);
+                chat.getGroups().forEach(group -> {
+                    group.remove(user);
+                    if (group.isEmpty()) {
+                        chat.removeGroup(group);
+                    }
+                });
                 super.windowClosing(e);
             }
         });
@@ -109,10 +115,12 @@ public class ChatWindow extends JFrame
     private void updateGroups()
     {
         ButtonGroup groupButtons = new ButtonGroup();
-        user.getGroups().forEach(group -> {
-            JRadioButton groupButton = new JRadioButton(group.getName(), false);
-            groupButtons.add(groupButton);
-            groupPanel.add(groupButton);
+        chat.getGroups().forEach(group -> {
+            if (group.contains(user)) {
+                JRadioButton groupButton = new JRadioButton(group.getName(), false);
+                groupButtons.add(groupButton);
+                groupPanel.add(groupButton);
+            }
         });
     }
 
@@ -196,22 +204,14 @@ public class ChatWindow extends JFrame
         @Override
         public void update(Observable o, Object obj)
         {
-            userPanel.setVisible(false);
-            userPanel.removeAll();
-            updateUsers();
-            userPanel.setVisible(true);
-        }
-    }
-
-    private class UserObserver
-        implements Observer
-    {
-
-        @Override
-        public void update(Observable o, Object obj)
-        {
-            if (obj instanceof User.ChangeMode) {
-                switch ((User.ChangeMode)obj) {
+            if (obj instanceof ChangeMode) {
+                switch ((ChangeMode)obj) {
+                case USER:
+                    userPanel.setVisible(false);
+                    userPanel.removeAll();
+                    updateUsers();
+                    userPanel.setVisible(true);
+                    break;
                 case MESSAGE:
                     updateMessageList();
                     break;

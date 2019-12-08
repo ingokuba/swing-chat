@@ -92,7 +92,7 @@ public class MainWindow extends JFrame
             if (!name.isEmpty()) {
                 if (chat.absent(name)) {
                     User user = new User(name);
-                    chat.add(user);
+                    chat.addUser(user);
                     chatWindows.add(new ChatWindow(user, chat));
                     username.setText("");
                 }

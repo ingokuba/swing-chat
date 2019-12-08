@@ -1,8 +1,12 @@
 package dhbw.swingchat.instance;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+
+import dhbw.swingchat.ChangeMode;
 
 /**
  * Collection of all users and their names.
@@ -10,7 +14,8 @@ import java.util.Observable;
 public class Chat extends Observable
 {
 
-    private Map<String, User> users = new HashMap<>();
+    private Map<String, User> users  = new HashMap<>();
+    private List<Group>       groups = new ArrayList<>();
 
     /**
      * Checks whether user with a given name exists.
@@ -25,11 +30,11 @@ public class Chat extends Observable
     /**
      * Adds a new user to the collection.
      */
-    public Chat add(User user)
+    public Chat addUser(User user)
     {
         if (users.putIfAbsent(user.getName(), user) == null) {
             setChanged();
-            notifyObservers();
+            notifyObservers(ChangeMode.USER);
         }
         return this;
     }
@@ -37,11 +42,11 @@ public class Chat extends Observable
     /**
      * Remove a user from the collection.
      */
-    public Chat remove(User user)
+    public Chat removeUser(User user)
     {
         if (users.remove(user.getName()) != null) {
             setChanged();
-            notifyObservers();
+            notifyObservers(ChangeMode.USER);
         }
         return this;
     }
@@ -60,5 +65,28 @@ public class Chat extends Observable
             users.get(username).message(message);
         }
         return this;
+    }
+
+    public Chat addGroup(Group group)
+    {
+        if (groups.add(group)) {
+            setChanged();
+            notifyObservers(ChangeMode.GROUP);
+        }
+        return this;
+    }
+
+    public Chat removeGroup(Group group)
+    {
+        if (groups.remove(group)) {
+            setChanged();
+            notifyObservers(ChangeMode.GROUP);
+        }
+        return this;
+    }
+
+    public List<Group> getGroups()
+    {
+        return groups;
     }
 }

@@ -12,7 +12,6 @@ public class Group
     {
         this.name = name;
         this.users = users;
-        updateUsers();
     }
 
     public String getName()
@@ -21,21 +20,24 @@ public class Group
     }
 
     /**
-     * Set back references in the {@link User} objects.
-     */
-    private void updateUsers()
-    {
-        users.forEach(user -> user.addGroup(this));
-    }
-
-    /**
      * Remove user from the group.
      */
     public Group remove(User user)
     {
-        if (users.remove(user)) {
-            user.removeGroup(this);
-        }
+        users.remove(user);
         return this;
+    }
+
+    /**
+     * Check whether user is in this group.
+     */
+    public boolean contains(User user)
+    {
+        return users.contains(user);
+    }
+
+    public boolean isEmpty()
+    {
+        return users.isEmpty();
     }
 }
