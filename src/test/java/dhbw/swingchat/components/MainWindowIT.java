@@ -2,12 +2,12 @@ package dhbw.swingchat.components;
 
 import static dhbw.swingchat.test.TestUtil.getFieldValue;
 import static java.awt.event.KeyEvent.VK_ENTER;
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
+
+import javax.swing.JFrame;
 
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.exception.WaitTimedOutError;
@@ -16,11 +16,11 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import dhbw.swingchat.instance.Group;
 import dhbw.swingchat.instance.User;
+import dhbw.swingchat.test.TestUtil;
 
 /**
  * UI test for the {@link MainWindow}.
@@ -35,6 +35,7 @@ public class MainWindowIT
     public void setup()
     {
         component = GuiActionRunner.execute(() -> new MainWindow());
+        component.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainWindow = new FrameFixture(component);
         mainWindow.show();
     }
@@ -43,10 +44,10 @@ public class MainWindowIT
     private void cleanup()
     {
         mainWindow.cleanUp();
+        TestUtil.clearStorage();
     }
 
     @Test
-    @Disabled("Hard to test, because System.exit is called")
     public void should_close_window()
     {
         mainWindow.requireVisible();
@@ -73,7 +74,7 @@ public class MainWindowIT
     {
         mainWindow.button("login").click();
 
-        assertThat(component.getChat().getUsers(), anEmptyMap());
+        assertThat(component.getChat().getUsers(), hasSize(0));
         Assertions.assertThrows(WaitTimedOutError.class, () -> {
             WindowFinder.findFrame(ChatWindow.class).withTimeout(100).using(mainWindow.robot());
         });
@@ -88,7 +89,7 @@ public class MainWindowIT
         mainWindow.textBox("username").enterText("testName");
         mainWindow.button("login").click();
 
-        assertThat(component.getChat().getUsers(), aMapWithSize(1));
+        assertThat(component.getChat().getUsers(), hasSize(1));
         WindowFinder.findFrame("testName").using(mainWindow.robot()).requireVisible();
     }
 
@@ -99,7 +100,7 @@ public class MainWindowIT
 
         mainWindow.button("login").click();
 
-        assertThat(component.getChat().getUsers(), aMapWithSize(1));
+        assertThat(component.getChat().getUsers(), hasSize(1));
         WindowFinder.findFrame("testName").using(mainWindow.robot()).requireVisible();
     }
 
@@ -108,7 +109,7 @@ public class MainWindowIT
     {
         mainWindow.textBox("username").enterText("testName").pressAndReleaseKeys(VK_ENTER);
 
-        assertThat(component.getChat().getUsers(), aMapWithSize(1));
+        assertThat(component.getChat().getUsers(), hasSize(1));
         WindowFinder.findFrame("testName").using(mainWindow.robot()).requireVisible();
     }
 

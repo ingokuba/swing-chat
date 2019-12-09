@@ -1,15 +1,11 @@
 package dhbw.swingchat.instance;
 
-import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,21 +30,7 @@ public class ChatTest
     @Test
     public void should_init_with_empty_collection()
     {
-        assertThat(chat.getUsers(), anEmptyMap());
-    }
-
-    @Test
-    public void should_return_true_for_absent_user()
-    {
-        assertTrue(chat.absent("test"));
-    }
-
-    @Test
-    public void should_return_false_for_existing_user()
-    {
-        chat.addUser(new User("test"));
-
-        assertFalse(chat.absent("test"));
+        assertThat(chat.getUsers(), empty());
     }
 
     @Test
@@ -86,7 +68,7 @@ public class ChatTest
         User user2 = new User("test");
         chat.addUser(user2);
 
-        User existing = chat.getUsers().get("test");
+        User existing = chat.getUser("test");
         assertThat(existing.getMessages(), hasItem("msgTest"));
     }
 
@@ -120,11 +102,9 @@ public class ChatTest
     {
         TestObserver observer = new TestObserver(Chat.class);
         chat.addObserver(observer);
-        List<User> users = new ArrayList<>();
-        users.add(new User("test"));
         assertFalse(observer.getCalled());
 
-        chat.addGroup(new Group("Admins", users));
+        chat.addGroup(new Group("Admins", new User("test")));
 
         assertTrue(observer.getCalled());
         assertThat(observer.getObject(), is(ChangeMode.GROUP));

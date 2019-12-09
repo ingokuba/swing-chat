@@ -106,7 +106,8 @@ public class ChatWindow extends JFrame
 
     private void updateUsers()
     {
-        chat.getUsers().forEach((name, user) -> {
+        chat.getUsers().forEach(user -> {
+            String name = user.getName();
             JCheckBox box = new JCheckBox(name, true);
             box.setName(name);
             userPanel.add(box);
@@ -191,7 +192,7 @@ public class ChatWindow extends JFrame
             if (component instanceof JCheckBox) {
                 JCheckBox box = (JCheckBox)component;
                 if (box.isSelected()) {
-                    users.add(chat.getUsers().get(box.getText()));
+                    users.add(chat.getUser(box.getText()));
                 }
             }
         }

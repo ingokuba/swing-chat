@@ -1,7 +1,6 @@
 package dhbw.swingchat.components;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
-import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -57,11 +56,11 @@ public class ChatWindowIT
     @Test
     public void should_remove_user_on_close()
     {
-        assertThat(chat.getUsers(), aMapWithSize(2));
+        assertThat(chat.getUsers(), hasSize(2));
 
         chatWindow.close();
 
-        assertThat(chat.getUsers(), aMapWithSize(1));
+        assertThat(chat.getUsers(), hasSize(1));
     }
 
     @Test

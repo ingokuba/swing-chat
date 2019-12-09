@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import com.google.gson.annotations.Expose;
+
 import dhbw.swingchat.ChangeMode;
 
 /**
@@ -12,8 +14,9 @@ import dhbw.swingchat.ChangeMode;
 public class User extends Observable
 {
 
+    @Expose
     private List<String> messages = new ArrayList<>();
-
+    @Expose
     private String       name;
 
     public User(String name)
@@ -29,12 +32,13 @@ public class User extends Observable
     /**
      * Adds a message to the list.
      */
-    public void message(String message)
+    public User message(String message)
     {
         if (messages.add(message)) {
             setChanged();
             notifyObservers(ChangeMode.MESSAGE);
         }
+        return this;
     }
 
     public List<String> getMessages()
