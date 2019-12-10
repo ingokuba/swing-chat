@@ -72,6 +72,7 @@ public class ChatWindowIT
         chatWindow.list("messages").requireItemCount(1);
         JList<String> messageList = chatWindow.list("messages").target();
         assertThat(messageList.getModel().getElementAt(0), containsString("Test message"));
+        chatWindow.textBox("userInput").requireText("");
     }
 
     @Test

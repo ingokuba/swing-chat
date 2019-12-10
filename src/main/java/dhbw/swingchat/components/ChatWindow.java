@@ -167,6 +167,7 @@ public class ChatWindow extends JFrame
                 String message = userInput.getText();
                 if (!message.isEmpty()) {
                     message(message);
+                    userInput.setText("");
                 }
             }
         });
