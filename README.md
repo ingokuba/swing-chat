@@ -1,4 +1,5 @@
-# Swing Chat [![CircleCI](https://circleci.com/gh/ingokuba/swing-chat.svg?style=svg)](https://circleci.com/gh/ingokuba/swing-chat)
+# Swing Chat [![CircleCI](https://circleci.com/gh/ingokuba/swing-chat.svg?style=svg)](https://circleci.com/gh/ingokuba/swing-chat) [![codecov](https://codecov.io/gh/ingokuba/swing-chat/branch/master/graph/badge.svg)](https://codecov.io/gh/ingokuba/swing-chat)
+
 :computer: Simulation of a chat program for multiple users.
 
 ## Running the project
