@@ -59,7 +59,7 @@ public class TestUtil
     public static void clearStorage()
     {
         try {
-            Files.delete(Paths.get("Chat.json"));
+            Files.deleteIfExists(Paths.get("Chat.json"));
         } catch (IOException e) {
             e.printStackTrace();
         }
