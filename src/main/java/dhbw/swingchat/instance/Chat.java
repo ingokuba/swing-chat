@@ -87,11 +87,6 @@ public class Chat extends Observable
         return this;
     }
 
-    public void setGroups(List<Group> groups)
-    {
-        this.groups = groups;
-    }
-
     public List<Group> getGroups()
     {
         return groups;

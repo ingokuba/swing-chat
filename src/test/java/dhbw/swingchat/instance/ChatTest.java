@@ -2,7 +2,9 @@ package dhbw.swingchat.instance;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -108,5 +110,21 @@ public class ChatTest
 
         assertTrue(observer.getCalled());
         assertThat(observer.getObject(), is(ChangeMode.GROUP));
+    }
+
+    @Test
+    public void should_not_add_user_when_already_in_there()
+    {
+        User user = new User("Test");
+
+        chat.addUser(user).addUser(user);
+
+        assertThat(chat.getUsers(), hasSize(1));
+    }
+
+    @Test
+    public void should_return_null_for_inexistent_user()
+    {
+        assertThat(chat.getUser("None"), nullValue());
     }
 }
