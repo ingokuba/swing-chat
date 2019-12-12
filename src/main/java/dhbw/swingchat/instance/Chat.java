@@ -91,4 +91,14 @@ public class Chat extends Observable
     {
         return groups;
     }
+
+    public Group getGroup(Group group)
+    {
+        for (Group existing : groups) {
+            if (existing.equals(group)) {
+                return existing;
+            }
+        }
+        return null;
+    }
 }

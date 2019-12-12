@@ -1,6 +1,7 @@
 package dhbw.swingchat.instance;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -110,6 +111,56 @@ public class ChatTest
 
         assertTrue(observer.getCalled());
         assertThat(observer.getObject(), is(ChangeMode.GROUP));
+        assertThat(chat.getGroups(), hasSize(1));
+    }
+
+    @Test
+    public void should_notify_observer_when_group_removed()
+    {
+        Group group = new Group("Admins", new User("test"));
+        chat.addGroup(group);
+        TestObserver observer = new TestObserver(Chat.class);
+        chat.addObserver(observer);
+        assertFalse(observer.getCalled());
+
+        chat.removeGroup(group);
+
+        assertTrue(observer.getCalled());
+        assertThat(observer.getObject(), is(ChangeMode.GROUP));
+    }
+
+    @Test
+    public void should_not_notify_observer_when_group_is_not_removed()
+    {
+        Group group = new Group("Admins", new User("test"));
+        TestObserver observer = new TestObserver(Chat.class);
+        chat.addObserver(observer);
+
+        chat.removeGroup(group);
+
+        assertFalse(observer.getCalled());
+    }
+
+    @Test
+    public void should_find_group()
+    {
+        Group group = new Group("Admins", new User("test"));
+        chat.addGroup(group);
+
+        Group foundGroup = chat.getGroup(group);
+
+        assertThat(foundGroup, equalTo(group));
+    }
+
+    @Test
+    public void should_not_return_inexistent_group()
+    {
+        Group group = new Group("Admins", new User("test"));
+        chat.addGroup(group);
+
+        Group foundGroup = chat.getGroup(new Group("Nerds", new User("test")));
+
+        assertThat(foundGroup, nullValue());
     }
 
     @Test
