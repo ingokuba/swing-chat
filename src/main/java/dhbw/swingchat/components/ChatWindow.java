@@ -1,6 +1,8 @@
 package dhbw.swingchat.components;
 
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -62,13 +64,21 @@ public class ChatWindow extends JFrame
             {
                 List<User> selectedUsers = getSelectedUsers();
                 if (selectedUsers.isEmpty()) {
+                    showMessageDialog(addGroup, "Group cannot be empty", "Warning", WARNING_MESSAGE);
                     return;
                 }
                 String groupName = showInputDialog("Enter group name");
                 if (groupName == null || groupName.isEmpty()) {
+                    showMessageDialog(addGroup, "Group name cannot be empty", "Warning", WARNING_MESSAGE);
                     return;
                 }
-                chat.addGroup(new Group(groupName, selectedUsers));
+                Group group = new Group(groupName, selectedUsers);
+                if (chat.getGroup(group) == null) {
+                    chat.addGroup(group);
+                }
+                else {
+                    showMessageDialog(addGroup, "Same group already exists", "Warning", WARNING_MESSAGE);
+                }
             }
         });
         add(addGroup);
@@ -98,7 +108,7 @@ public class ChatWindow extends JFrame
                 copy.addAll(chat.getGroups());
                 copy.forEach(group -> {
                     group.remove(user);
-                    if (group.isEmpty()) {
+                    if (group.size() == 0) {
                         chat.removeGroup(group);
                     }
                 });
@@ -144,6 +154,7 @@ public class ChatWindow extends JFrame
                 });
                 groupPanel.add(groupButton);
                 groupButton.setText(groupName);
+                groupButton.setToolTipText(group.toString());
             }
         });
     }

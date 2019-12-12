@@ -2,6 +2,7 @@ package dhbw.swingchat.components;
 
 import static dhbw.swingchat.test.TestUtil.getFieldValue;
 import static java.awt.event.KeyEvent.VK_ENTER;
+import static org.assertj.swing.core.matcher.JLabelMatcher.withText;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -81,6 +82,7 @@ public class MainWindowIT
         mainWindow.button("login").click();
 
         assertThat(component.getChat().getUsers(), hasSize(0));
+        mainWindow.dialog().label(withText("Username cannot be empty")).requireVisible();
         Assertions.assertThrows(WaitTimedOutError.class, () -> {
             WindowFinder.findFrame(ChatWindow.class).withTimeout(100).using(mainWindow.robot());
         });
@@ -96,6 +98,7 @@ public class MainWindowIT
         mainWindow.button("login").click();
 
         assertThat(component.getChat().getUsers(), hasSize(1));
+        mainWindow.dialog().label(withText("Username already exists")).requireVisible();
         WindowFinder.findFrame("testName").using(mainWindow.robot()).requireVisible();
     }
 

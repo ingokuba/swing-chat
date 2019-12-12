@@ -1,7 +1,9 @@
 package dhbw.swingchat.instance;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -22,7 +24,7 @@ public class Group
 
     public Group(String name, User... users)
     {
-        this(name, asList(users));
+        this(name, new ArrayList<>(asList(users)));
     }
 
     public String getName()
@@ -57,8 +59,35 @@ public class Group
         return false;
     }
 
-    public boolean isEmpty()
+    public int size()
     {
-        return users.isEmpty();
+        return users.size();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof Group) {
+            Group group = (Group)obj;
+            if (!getName().equals(group.getName())) {
+                return false;
+            }
+            if (size() != group.size()) {
+                return false;
+            }
+            for (User user : users) {
+                if (!group.contains(user)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return users.stream().map(user -> user.getName()).collect(joining(", "));
     }
 }

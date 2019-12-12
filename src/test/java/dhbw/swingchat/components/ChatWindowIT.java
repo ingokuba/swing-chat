@@ -1,22 +1,19 @@
 package dhbw.swingchat.components;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
+import static org.assertj.swing.core.matcher.JLabelMatcher.withText;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import javax.swing.JDialog;
 import javax.swing.JList;
 
+import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
-import org.assertj.swing.exception.WaitTimedOutError;
-import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import dhbw.swingchat.instance.Chat;
@@ -99,7 +96,7 @@ public class ChatWindowIT
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         assertThat(chat.getGroups(), hasSize(1));
-        chatWindow.button("Groupie").requireVisible().requireText("Groupie");
+        chatWindow.button("Groupie").requireVisible().requireText("Groupie").requireToolTip("Chatter, Second");
     }
 
     @Test
@@ -107,22 +104,35 @@ public class ChatWindowIT
     {
         chatWindow.checkBox("Chatter").uncheck();
         chatWindow.checkBox("Second").uncheck();
+
         chatWindow.button("newGroup").click();
-        Assertions.assertThrows(WaitTimedOutError.class, () -> {
-            WindowFinder.findDialog(JDialog.class).withTimeout(100).using(chatWindow.robot());
-        });
+
         assertThat(chat.getGroups(), hasSize(0));
+        chatWindow.dialog().label(withText("Group cannot be empty")).requireVisible();
     }
 
     @Test
-    @Disabled("Somehow dialog doesn't show up in this test case.")
     public void should_not_create_group_without_name()
     {
         chatWindow.button("newGroup").click();
 
-        chatWindow.dialog().textBox().pressAndReleaseKeys(VK_ENTER);
+        chatWindow.dialog().button(JButtonMatcher.withText("OK")).click();
 
         assertThat(chat.getGroups(), hasSize(0));
+        chatWindow.dialog().label(withText("Group name cannot be empty")).requireVisible();
+    }
+
+    @Test
+    public void should_not_create_group_with_same_name_and_members()
+    {
+        chatWindow.button("newGroup").click();
+        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
+
+        chatWindow.button("newGroup").click();
+        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
+
+        assertThat(chat.getGroups(), hasSize(1));
+        chatWindow.dialog().label(withText("Same group already exists")).requireVisible();
     }
 
     @Test
