@@ -54,6 +54,12 @@ public class ChatWindowIT
     }
 
     @Test
+    public void should_have_button_label()
+    {
+        chatWindow.button("newGroup").requireText("New group");
+    }
+
+    @Test
     public void should_remove_user_on_close()
     {
         assertThat(chat.getUsers(), hasSize(2));
@@ -88,12 +94,12 @@ public class ChatWindowIT
     @Test
     public void should_create_group()
     {
-        chatWindow.button().click();
+        chatWindow.button("newGroup").click();
 
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         assertThat(chat.getGroups(), hasSize(1));
-        chatWindow.button("Groupie").requireVisible();
+        chatWindow.button("Groupie").requireVisible().requireText("Groupie");
     }
 
     @Test
@@ -101,7 +107,7 @@ public class ChatWindowIT
     {
         chatWindow.checkBox("Chatter").uncheck();
         chatWindow.checkBox("Second").uncheck();
-        chatWindow.button().click();
+        chatWindow.button("newGroup").click();
         Assertions.assertThrows(WaitTimedOutError.class, () -> {
             WindowFinder.findDialog(JDialog.class).withTimeout(100).using(chatWindow.robot());
         });
@@ -112,7 +118,7 @@ public class ChatWindowIT
     @Disabled("Somehow dialog doesn't show up in this test case.")
     public void should_not_create_group_without_name()
     {
-        chatWindow.button().click();
+        chatWindow.button("newGroup").click();
 
         chatWindow.dialog().textBox().pressAndReleaseKeys(VK_ENTER);
 
@@ -123,7 +129,7 @@ public class ChatWindowIT
     public void should_remove_group_on_close()
     {
         chatWindow.checkBox("Second").click();
-        chatWindow.button().click();
+        chatWindow.button("newGroup").click();
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
         assertThat(chat.getGroups(), hasSize(1));
 
@@ -136,7 +142,7 @@ public class ChatWindowIT
     public void should_select_users_in_group()
     {
         chatWindow.checkBox("Second").click();
-        chatWindow.button().click();
+        chatWindow.button("newGroup").click();
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         chatWindow.checkBox("Chatter").click();

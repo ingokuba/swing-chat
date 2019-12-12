@@ -85,6 +85,7 @@ public class MainWindow extends JFrame
         button.setName("login");
         button.setAction(new CreateUserAction());
         add(button);
+        button.setText("Login");
     }
 
     /**
