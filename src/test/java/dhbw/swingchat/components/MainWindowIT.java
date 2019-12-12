@@ -70,6 +70,12 @@ public class MainWindowIT
     }
 
     @Test
+    public void should_have_button_label()
+    {
+        mainWindow.button("login").requireText("Login");
+    }
+
+    @Test
     public void should_not_open_chat_window_for_empty_name()
     {
         mainWindow.button("login").click();
@@ -101,7 +107,7 @@ public class MainWindowIT
         mainWindow.button("login").click();
 
         assertThat(component.getChat().getUsers(), hasSize(1));
-        WindowFinder.findFrame("testName").using(mainWindow.robot()).requireVisible();
+        WindowFinder.findFrame("testName").using(mainWindow.robot()).requireVisible().requireTitle("testName");
     }
 
     @Test

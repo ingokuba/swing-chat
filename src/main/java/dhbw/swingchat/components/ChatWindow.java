@@ -51,7 +51,8 @@ public class ChatWindow extends JFrame
         userPanel = new JPanel();
         updateUsers();
         add(userPanel);
-        JButton addGroup = new JButton("New group");
+        JButton addGroup = new JButton();
+        addGroup.setName("newGroup");
         addGroup.setAction(new AbstractAction() {
 
             private static final long serialVersionUID = 1L;
@@ -71,6 +72,7 @@ public class ChatWindow extends JFrame
             }
         });
         add(addGroup);
+        addGroup.setText("New group");
         groupPanel = new JPanel();
         updateGroups();
         add(groupPanel);
@@ -81,6 +83,7 @@ public class ChatWindow extends JFrame
         add(messageList);
         addUserInput();
         setName(user.getName());
+        setTitle(user.getName());
         setSize(500, 500);
         setLayout(new GridLayout(5, 1));
         setVisible(true);
@@ -119,9 +122,10 @@ public class ChatWindow extends JFrame
         ButtonGroup groupButtons = new ButtonGroup();
         chat.getGroups().forEach(group -> {
             if (group.contains(user)) {
-                JButton groupButton = new JButton(group.getName());
+                String groupName = group.getName();
+                JButton groupButton = new JButton();
                 groupButton.setSize(50, 50);
-                groupButton.setName(group.getName());
+                groupButton.setName(groupName);
                 groupButtons.add(groupButton);
                 groupButton.setAction(new AbstractAction() {
 
@@ -139,6 +143,7 @@ public class ChatWindow extends JFrame
                     }
                 });
                 groupPanel.add(groupButton);
+                groupButton.setText(groupName);
             }
         });
     }
