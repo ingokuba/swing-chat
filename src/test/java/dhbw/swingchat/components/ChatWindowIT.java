@@ -1,11 +1,18 @@
 package dhbw.swingchat.components;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.assertj.swing.core.matcher.JLabelMatcher.withText;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.JList;
 
@@ -39,7 +46,7 @@ public class ChatWindowIT
     }
 
     @AfterEach
-    private void cleanup()
+    public void cleanup()
     {
         chatWindow.cleanUp();
     }
@@ -48,12 +55,6 @@ public class ChatWindowIT
     public void should_have_username()
     {
         assertThat(chatWindow.target().getName(), is(user.getName()));
-    }
-
-    @Test
-    public void should_have_button_label()
-    {
-        assertThat(chatWindow.button("newGroup").target().getText(), is("New group"));
     }
 
     @Test
@@ -160,5 +161,26 @@ public class ChatWindowIT
 
         chatWindow.checkBox("Chatter").requireSelected();
         chatWindow.checkBox("Second").requireNotSelected();
+    }
+
+    @Test
+    public void should_have_button_icon()
+    {
+        assertThat(chatWindow.button("newGroup").target().getIcon(), notNullValue());
+    }
+
+    @Test
+    public void should_have_button_label_when_image_cannot_be_loaded()
+        throws IOException
+    {
+        File file = new File(getClass().getResource("/img/group_add.png").getFile());
+        Path temp = Files.move(file.toPath(), file.toPath().resolveSibling("temp"), REPLACE_EXISTING);
+        try {
+            cleanup();
+            setup();
+            assertThat(chatWindow.button("newGroup").target().getText(), is("New group"));
+        } finally {
+            Files.move(temp, file.toPath());
+        }
     }
 }
