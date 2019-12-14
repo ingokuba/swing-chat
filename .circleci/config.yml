@@ -20,3 +20,17 @@ jobs:
             key: v1-dependencies-{{ checksum "pom.xml" }}
       -  run: mvn verify
       -  run: bash <(curl -s https://codecov.io/bash)
+   sonar:
+      docker:
+      -  image: circleci/openjdk:11-jdk
+      steps:
+      - checkout
+      -  run: mvn verify sonar:sonar -DskipTests -Dsonar.branch.name=${CIRCLE_BRANCH}
+workflows:
+   main:
+      jobs:
+      - build
+      -  sonar:
+            context: SonarCloud
+            requires:
+            - build
