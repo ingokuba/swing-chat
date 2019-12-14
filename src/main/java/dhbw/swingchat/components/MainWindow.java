@@ -1,10 +1,9 @@
 package dhbw.swingchat.components;
 
+import static dhbw.swingchat.components.MessageUtil.showWarning;
 import static dhbw.swingchat.storage.Storage.loadChat;
 import static dhbw.swingchat.storage.Storage.storeChat;
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -110,11 +109,11 @@ public class MainWindow extends JFrame
                     username.setText("");
                 }
                 else {
-                    showMessageDialog(username, "Username already exists", "Warning", WARNING_MESSAGE);
+                    showWarning(username, "Username already exists");
                 }
             }
             else {
-                showMessageDialog(username, "Username cannot be empty", "Warning", WARNING_MESSAGE);
+                showWarning(username, "Username cannot be empty");
             }
         }
     }

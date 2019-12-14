@@ -53,7 +53,7 @@ public class ChatWindowIT
     @Test
     public void should_have_button_label()
     {
-        chatWindow.button("newGroup").requireText("New group");
+        assertThat(chatWindow.button("newGroup").target().getText(), is("New group"));
     }
 
     @Test

@@ -1,10 +1,14 @@
 package dhbw.swingchat.instance;
 
+import static java.util.Objects.hash;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -100,5 +104,16 @@ public class GroupTest
         group.remove(user);
 
         assertFalse(group.contains("Hans"));
+    }
+
+    @Test
+    public void should_hash_group()
+    {
+        User user = new User("Hans");
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        Group group = new Group("Test", user);
+
+        assertThat(group.hashCode(), equalTo(hash("Test", users)));
     }
 }
