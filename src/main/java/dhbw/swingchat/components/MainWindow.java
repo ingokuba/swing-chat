@@ -1,5 +1,6 @@
 package dhbw.swingchat.components;
 
+import static dhbw.swingchat.components.MessageUtil.showError;
 import static dhbw.swingchat.components.MessageUtil.showWarning;
 import static dhbw.swingchat.storage.Storage.loadChat;
 import static dhbw.swingchat.storage.Storage.storeChat;
@@ -9,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +57,11 @@ public class MainWindow extends JFrame
             @Override
             public void windowClosing(WindowEvent e)
             {
-                storeChat(chat);
+                try {
+                    storeChat(chat);
+                } catch (IOException exception) {
+                    showError(rootPane, "Couldn't store application state");
+                }
                 for (ChatWindow chatWindow : chatWindows) {
                     chatWindow.dispatchEvent(new WindowEvent(chatWindow, WINDOW_CLOSING));
                 }

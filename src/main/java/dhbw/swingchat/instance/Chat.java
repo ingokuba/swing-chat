@@ -28,7 +28,8 @@ public class Chat extends Observable
      */
     public Chat addUser(User user)
     {
-        if (!users.contains(user) && users.add(user)) {
+        if (!users.contains(user)) {
+            users.add(user);
             setChanged();
             notifyObservers(ChangeMode.USER);
         }
@@ -75,10 +76,9 @@ public class Chat extends Observable
 
     public Chat addGroup(Group group)
     {
-        if (groups.add(group)) {
-            setChanged();
-            notifyObservers(ChangeMode.GROUP);
-        }
+        groups.add(group);
+        setChanged();
+        notifyObservers(ChangeMode.GROUP);
         return this;
     }
 

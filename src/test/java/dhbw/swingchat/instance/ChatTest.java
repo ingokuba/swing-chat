@@ -176,6 +176,20 @@ public class ChatTest
     @Test
     public void should_return_null_for_inexistent_user()
     {
+        chat.addUser(new User("Peter"));
+
         assertThat(chat.getUser("None"), nullValue());
+    }
+
+    @Test
+    public void should_not_notify_observer_when_user_is_not_removed()
+    {
+        chat.addUser(new User("Peter"));
+        TestObserver observer = new TestObserver(Chat.class);
+        chat.addObserver(observer);
+
+        chat.removeUser(new User("None"));
+
+        assertFalse(observer.getCalled());
     }
 }

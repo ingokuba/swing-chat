@@ -38,10 +38,9 @@ public class User extends Observable
      */
     public User message(String message)
     {
-        if (messages.add(message)) {
-            setChanged();
-            notifyObservers(ChangeMode.MESSAGE);
-        }
+        messages.add(message);
+        setChanged();
+        notifyObservers(ChangeMode.MESSAGE);
         return this;
     }
 
