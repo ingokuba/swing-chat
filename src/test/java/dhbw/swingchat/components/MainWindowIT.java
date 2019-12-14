@@ -4,7 +4,10 @@ import static dhbw.swingchat.test.TestUtil.getFieldValue;
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static org.assertj.swing.core.matcher.JLabelMatcher.withText;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -51,29 +54,29 @@ public class MainWindowIT
     @Test
     public void should_close_window()
     {
-        mainWindow.requireVisible();
+        assertTrue(mainWindow.target().isVisible());
 
         mainWindow.close();
 
-        mainWindow.requireNotVisible();
+        assertFalse(mainWindow.target().isVisible());
     }
 
     @Test
     public void should_have_inputfield()
     {
-        mainWindow.textBox("username").requireVisible();
+        assertTrue(mainWindow.textBox("username").target().isVisible());
     }
 
     @Test
     public void should_have_button()
     {
-        mainWindow.button("login").requireEnabled();
+        assertTrue(mainWindow.button("login").target().isEnabled());
     }
 
     @Test
     public void should_have_button_label()
     {
-        mainWindow.button("login").requireText("Login");
+        assertThat(mainWindow.button("login").target().getText(), is("Login"));
     }
 
     @Test
@@ -142,7 +145,7 @@ public class MainWindowIT
 
         mainWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
-        WindowFinder.findFrame("testName2").using(mainWindow.robot()).button("Groupie").requireVisible();
+        assertTrue(WindowFinder.findFrame("testName2").using(mainWindow.robot()).button("Groupie").target().isVisible());
     }
 
     @Test

@@ -1,8 +1,7 @@
 package dhbw.swingchat.components;
 
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static dhbw.swingchat.components.MessageUtil.showWarning;
 import static javax.swing.JOptionPane.showInputDialog;
-import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -64,12 +63,12 @@ public class ChatWindow extends JFrame
             {
                 List<User> selectedUsers = getSelectedUsers();
                 if (selectedUsers.isEmpty()) {
-                    showMessageDialog(addGroup, "Group cannot be empty", "Warning", WARNING_MESSAGE);
+                    showWarning(addGroup, "Group cannot be empty");
                     return;
                 }
                 String groupName = showInputDialog("Enter group name");
                 if (groupName == null || groupName.isEmpty()) {
-                    showMessageDialog(addGroup, "Group name cannot be empty", "Warning", WARNING_MESSAGE);
+                    showWarning(addGroup, "Group name cannot be empty");
                     return;
                 }
                 Group group = new Group(groupName, selectedUsers);
@@ -77,7 +76,7 @@ public class ChatWindow extends JFrame
                     chat.addGroup(group);
                 }
                 else {
-                    showMessageDialog(addGroup, "Same group already exists", "Warning", WARNING_MESSAGE);
+                    showWarning(addGroup, "Same group already exists");
                 }
             }
         });
@@ -119,8 +118,8 @@ public class ChatWindow extends JFrame
 
     private void updateUsers()
     {
-        chat.getUsers().forEach(user -> {
-            String name = user.getName();
+        chat.getUsers().forEach(chatMember -> {
+            String name = chatMember.getName();
             JCheckBox box = new JCheckBox(name, true);
             box.setName(name);
             userPanel.add(box);

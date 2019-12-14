@@ -1,5 +1,6 @@
 package dhbw.swingchat.instance;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -12,12 +13,15 @@ import dhbw.swingchat.ChangeMode;
  * User object identified by it's name.
  */
 public class User extends Observable
+    implements Serializable
 {
 
+    private static final long serialVersionUID = 1L;
+
     @Expose
-    private List<String> messages = new ArrayList<>();
+    private List<String>      messages         = new ArrayList<>();
     @Expose
-    private String       name;
+    private String            name;
 
     public User(String name)
     {
