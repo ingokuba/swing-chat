@@ -26,16 +26,12 @@ public class Storage
     /**
      * Store chat in a file.
      */
-    public static final boolean storeChat(Chat chat)
+    public static final void storeChat(Chat chat)
+        throws IOException
     {
         deleteObservers(chat);
         String json = new Gson().toJson(chat);
-        try {
-            Files.write(PATH, json.getBytes());
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
+        Files.write(PATH, json.getBytes());
     }
 
     /**

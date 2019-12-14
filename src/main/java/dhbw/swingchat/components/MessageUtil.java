@@ -1,5 +1,6 @@
 package dhbw.swingchat.components;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -19,5 +20,13 @@ public class MessageUtil
     public static void showWarning(Component parent, String message)
     {
         showMessageDialog(parent, message, "Warning", WARNING_MESSAGE);
+    }
+
+    /**
+     * Show error message dialog.
+     */
+    public static void showError(Component parent, String message)
+    {
+        showMessageDialog(parent, message, "Error", ERROR_MESSAGE);
     }
 }
