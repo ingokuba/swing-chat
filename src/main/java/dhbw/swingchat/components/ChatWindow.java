@@ -176,10 +176,8 @@ public class ChatWindow extends JFrame
                     public void actionPerformed(ActionEvent e)
                     {
                         for (Component component : userPanel.getComponents()) {
-                            if (component instanceof JCheckBox) {
-                                JCheckBox box = (JCheckBox)component;
-                                box.setSelected(group.contains(box.getText()));
-                            }
+                            JCheckBox box = (JCheckBox)component;
+                            box.setSelected(group.contains(box.getText()));
                         }
                     }
                 });
@@ -245,11 +243,9 @@ public class ChatWindow extends JFrame
     {
         List<User> users = new ArrayList<>();
         for (Component component : userPanel.getComponents()) {
-            if (component instanceof JCheckBox) {
-                JCheckBox box = (JCheckBox)component;
-                if (box.isSelected()) {
-                    users.add(chat.getUser(box.getText()));
-                }
+            JCheckBox box = (JCheckBox)component;
+            if (box.isSelected()) {
+                users.add(chat.getUser(box.getText()));
             }
         }
         return users;
@@ -262,11 +258,9 @@ public class ChatWindow extends JFrame
     {
         List<String> names = new ArrayList<>();
         for (Component component : userPanel.getComponents()) {
-            if (component instanceof JCheckBox) {
-                JCheckBox box = (JCheckBox)component;
-                if (box.isSelected()) {
-                    names.add(box.getText());
-                }
+            JCheckBox box = (JCheckBox)component;
+            if (box.isSelected()) {
+                names.add(box.getText());
             }
         }
         return names.toArray(new String[0]);
@@ -279,24 +273,22 @@ public class ChatWindow extends JFrame
         @Override
         public void update(Observable o, Object obj)
         {
-            if (obj instanceof ChangeMode) {
-                switch ((ChangeMode)obj) {
-                case USER:
-                    userPanel.setVisible(false);
-                    userPanel.removeAll();
-                    updateUsers();
-                    userPanel.setVisible(true);
-                    break;
-                case MESSAGE:
-                    updateMessageList();
-                    break;
-                case GROUP:
-                    groupPanel.setVisible(false);
-                    groupPanel.removeAll();
-                    updateGroups();
-                    groupPanel.setVisible(true);
-                    break;
-                }
+            switch ((ChangeMode)obj) {
+            case USER:
+                userPanel.setVisible(false);
+                userPanel.removeAll();
+                updateUsers();
+                userPanel.setVisible(true);
+                break;
+            case MESSAGE:
+                updateMessageList();
+                break;
+            case GROUP:
+                groupPanel.setVisible(false);
+                groupPanel.removeAll();
+                updateGroups();
+                groupPanel.setVisible(true);
+                break;
             }
         }
     }

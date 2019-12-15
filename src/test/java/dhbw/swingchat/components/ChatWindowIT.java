@@ -1,28 +1,34 @@
 package dhbw.swingchat.components;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.assertj.swing.core.matcher.JLabelMatcher.withText;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.powermock.api.mockito.PowerMockito.doThrow;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
+import javax.imageio.ImageIO;
 import javax.swing.JList;
 
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.User;
@@ -30,6 +36,9 @@ import dhbw.swingchat.instance.User;
 /**
  * UI test for the {@link ChatWindow}.
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ImageIO.class)
+@PowerMockIgnore("javax.swing.*")
 public class ChatWindowIT
 {
 
@@ -38,6 +47,15 @@ public class ChatWindowIT
     private User         user = new User("Chatter");
     private Chat         chat = new Chat().addUser(user).addUser(new User("Second"));
 
+    @BeforeClass
+    public static void mock()
+        throws Exception
+    {
+        mockStatic(ImageIO.class);
+        doThrow(new IOException()).when(ImageIO.class, "read", any());
+    }
+
+    @Before
     @BeforeEach
     public void setup()
     {
@@ -46,6 +64,7 @@ public class ChatWindowIT
         chatWindow.show();
     }
 
+    @After
     @AfterEach
     public void cleanup()
     {
@@ -78,6 +97,14 @@ public class ChatWindowIT
         JList<String> messageList = chatWindow.list("messages").target();
         assertThat(messageList.getModel().getElementAt(0), containsString("Test message"));
         chatWindow.textBox("userInput").requireText("");
+    }
+
+    @Test
+    public void should_not_add_empty_message_to_list()
+    {
+        chatWindow.textBox("userInput").pressAndReleaseKeys(VK_ENTER);
+
+        chatWindow.list("messages").requireItemCount(0);
     }
 
     @Test
@@ -119,6 +146,17 @@ public class ChatWindowIT
         chatWindow.button("newGroup").click();
 
         chatWindow.dialog().button(JButtonMatcher.withText("OK")).click();
+
+        assertThat(chat.getGroups(), hasSize(0));
+        chatWindow.dialog().label(withText("Group name cannot be empty")).requireVisible();
+    }
+
+    @Test
+    public void should_not_create_group_with_null_name()
+    {
+        chatWindow.button("newGroup").click();
+
+        chatWindow.dialog().close();
 
         assertThat(chat.getGroups(), hasSize(0));
         chatWindow.dialog().label(withText("Group name cannot be empty")).requireVisible();
@@ -170,19 +208,10 @@ public class ChatWindowIT
         assertThat(chatWindow.button("newGroup").target().getIcon(), notNullValue());
     }
 
-    @Test
-    @Disabled("Doesn't work in CI - tested with jar.")
+    @org.junit.Test
     public void should_have_button_label_when_image_cannot_be_loaded()
         throws IOException
     {
-        File file = new File(getClass().getResource("/img/group_add.png").getFile());
-        Path temp = Files.move(file.toPath(), file.toPath().resolveSibling("temp"), REPLACE_EXISTING);
-        try {
-            cleanup();
-            setup();
-            assertThat(chatWindow.button("newGroup").target().getText(), is("New group"));
-        } finally {
-            Files.move(temp, file.toPath());
-        }
+        assertThat(chatWindow.button("newGroup").target().getText(), is("New group"));
     }
 }
