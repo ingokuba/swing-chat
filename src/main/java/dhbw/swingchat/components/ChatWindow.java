@@ -4,7 +4,7 @@ import static dhbw.swingchat.components.MessageUtil.showWarning;
 import static javax.swing.JOptionPane.showInputDialog;
 
 import java.awt.Component;
-import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -13,12 +13,15 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -27,6 +30,7 @@ import dhbw.swingchat.ChangeMode;
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.Group;
 import dhbw.swingchat.instance.User;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Chat window for a specific user.
@@ -42,16 +46,71 @@ public class ChatWindow extends JFrame
     private JPanel            userPanel;
     private JPanel            groupPanel;
     private JList<String>     messageList;
+    private JPanel            inputPanel;
 
     public ChatWindow(User user1, Chat chat1)
     {
+        setLayout(new MigLayout("fill"));
         this.user = user1;
         this.user.addObserver(new ChatObserver());
         this.chat = chat1;
         this.chat.addObserver(new ChatObserver());
-        userPanel = new JPanel();
+        userPanel = new JPanel(new MigLayout());
         updateUsers();
         add(userPanel);
+        // new group button:
+        addGroupButton();
+
+        groupPanel = new JPanel(new MigLayout());
+        updateGroups();
+        add(groupPanel, "wrap");
+
+        messageList = new JList<>();
+        updateMessageList();
+        messageList.setName("messages");
+        add(messageList, "grow, push, span");
+
+        inputPanel = new JPanel(new MigLayout("fill"));
+        addUserLabel();
+        addUserInput();
+        add(inputPanel, "growx, pushx, span");
+
+        setName(user.getName());
+        setTitle(user.getName());
+        setSize(500, 500);
+        setVisible(true);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                chat.removeUser(user);
+                List<Group> copy = new ArrayList<>();
+                copy.addAll(chat.getGroups());
+                copy.forEach(group -> {
+                    group.remove(user);
+                    if (group.size() == 0) {
+                        chat.removeGroup(group);
+                    }
+                });
+                super.windowClosing(e);
+            }
+        });
+    }
+
+    private void updateUsers()
+    {
+        chat.getUsers().forEach(chatMember -> {
+            String name = chatMember.getName();
+            JCheckBox box = new JCheckBox(name, true);
+            box.setName(name);
+            userPanel.add(box, "wrap");
+        });
+    }
+
+    private void addGroupButton()
+    {
         JButton addGroup = new JButton();
         addGroup.setName("newGroup");
         addGroup.setAction(new AbstractAction() {
@@ -81,49 +140,23 @@ public class ChatWindow extends JFrame
             }
         });
         add(addGroup);
-        addGroup.setText("New group");
-        groupPanel = new JPanel();
-        updateGroups();
-        add(groupPanel);
-        messageList = new JList<>();
-        updateMessageList();
-        messageList.setName("messages");
-        messageList.setSize(500, 1000);
-        add(messageList);
-        addUserInput();
-        setName(user.getName());
-        setTitle(user.getName());
-        setSize(500, 500);
-        setLayout(new GridLayout(5, 1));
-        setVisible(true);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                chat.removeUser(user);
-                List<Group> copy = new ArrayList<>();
-                copy.addAll(chat.getGroups());
-                copy.forEach(group -> {
-                    group.remove(user);
-                    if (group.size() == 0) {
-                        chat.removeGroup(group);
-                    }
-                });
-                super.windowClosing(e);
-            }
-        });
+        Image groupIcon = getGroupIcon();
+        if (groupIcon != null) {
+            addGroup.setIcon(new ImageIcon(groupIcon.getScaledInstance(50, 50, Image.SCALE_DEFAULT)));
+            addGroup.setToolTipText("New group");
+        }
+        else {
+            addGroup.setText("New group");
+        }
     }
 
-    private void updateUsers()
+    private Image getGroupIcon()
     {
-        chat.getUsers().forEach(chatMember -> {
-            String name = chatMember.getName();
-            JCheckBox box = new JCheckBox(name, true);
-            box.setName(name);
-            userPanel.add(box);
-        });
+        try {
+            return ImageIO.read(getClass().getResource("/img/group_add.png"));
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private void updateGroups()
@@ -133,7 +166,6 @@ public class ChatWindow extends JFrame
             if (group.contains(user)) {
                 String groupName = group.getName();
                 JButton groupButton = new JButton();
-                groupButton.setSize(50, 50);
                 groupButton.setName(groupName);
                 groupButtons.add(groupButton);
                 groupButton.setAction(new AbstractAction() {
@@ -151,7 +183,7 @@ public class ChatWindow extends JFrame
                         }
                     }
                 });
-                groupPanel.add(groupButton);
+                groupPanel.add(groupButton, "wrap, growx");
                 groupButton.setText(groupName);
                 groupButton.setToolTipText(group.toString());
             }
@@ -167,11 +199,19 @@ public class ChatWindow extends JFrame
         messageList.setModel(model);
     }
 
+    private void addUserLabel()
+    {
+        JLabel userName = new JLabel();
+        inputPanel.add(userName);
+        userName.setText(user.getName() + ": ");
+    }
+
     private void addUserInput()
     {
         JTextField userInput = new JTextField();
+        userInput.setLayout(new MigLayout());
         userInput.setName("userInput");
-        userInput.setSize(200, 30);
+        userInput.setSize(200, 50);
         userInput.setAction(new AbstractAction() {
 
             private static final long serialVersionUID = 1L;
@@ -186,7 +226,7 @@ public class ChatWindow extends JFrame
                 }
             }
         });
-        add(userInput);
+        inputPanel.add(userInput, "growx, pushx, span");
     }
 
     /**
