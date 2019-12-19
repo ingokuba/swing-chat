@@ -1,4 +1,4 @@
-package dhbw.swingchat;
+package dhbw.swingchat.helper;
 
 public enum ChangeMode
 {
