@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -18,11 +19,13 @@ import javax.swing.JList;
 
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.exception.WaitTimedOutError;
 import org.assertj.swing.fixture.FrameFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -159,7 +162,10 @@ public class ChatWindowIT
         chatWindow.dialog().close();
 
         assertThat(chat.getGroups(), hasSize(0));
-        chatWindow.dialog().label(withText("Group name cannot be empty")).requireVisible();
+
+        Assertions.assertThrows(WaitTimedOutError.class, () -> {
+            chatWindow.dialog();
+        });
     }
 
     @Test

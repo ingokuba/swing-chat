@@ -126,7 +126,11 @@ public class ChatWindow extends JFrame
                     return;
                 }
                 String groupName = showInputDialog("Enter group name");
-                if (groupName == null || groupName.isEmpty()) {
+                
+                if (groupName == null) {    //Cancel / Escape / Close
+                    return;
+                }
+                if (groupName.isEmpty()) {
                     showWarning(addGroup, "Group name cannot be empty");
                     return;
                 }
