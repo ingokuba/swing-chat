@@ -1,5 +1,6 @@
 package dhbw.swingchat.components;
 
+import static dhbw.swingchat.helper.ChangeMode.ADD;
 import static dhbw.swingchat.helper.MessageUtil.showWarning;
 import static javax.swing.JOptionPane.showInputDialog;
 
@@ -25,8 +26,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
-import dhbw.swingchat.helper.ChangeMode;
+import dhbw.swingchat.helper.ChangeEvent;
 import dhbw.swingchat.helper.ThemedJFrame;
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.Group;
@@ -39,15 +41,18 @@ import net.miginfocom.swing.MigLayout;
 public class ChatWindow extends ThemedJFrame
 {
 
-    private static final long serialVersionUID = 1L;
+    private static final long        serialVersionUID = 1L;
 
-    private User              user;
-    private Chat              chat;
+    private User                     user;
+    private Chat                     chat;
 
-    private JPanel            userPanel;
-    private JPanel            groupPanel;
-    private JList<String>     messageList;
-    private JPanel            inputPanel;
+    private JPanel                   userPanel;
+    private JPanel                   groupPanel;
+    private JList<String>            messageList;
+    private JPanel                   inputPanel;
+
+    private ButtonGroup              groupButtons     = new ButtonGroup();
+    private DefaultListModel<String> messages         = new DefaultListModel<>();
 
     public ChatWindow(User user1, Chat chat1)
     {
@@ -68,7 +73,10 @@ public class ChatWindow extends ThemedJFrame
         add(groupPanel, "wrap");
 
         messageList = new JList<>();
-        updateMessageList();
+        for (String message : user.getMessages()) {
+            messages.addElement(message);
+        }
+        messageList.setModel(messages);
         messageList.setName("messages");
         add(messageList, "grow, push, span");
 
@@ -90,7 +98,6 @@ public class ChatWindow extends ThemedJFrame
             public void windowOpened(WindowEvent e)
             {
                 updateFrame();
-                messageList.setBackground(getSecondaryColor());
             }
 
             @Override
@@ -112,22 +119,35 @@ public class ChatWindow extends ThemedJFrame
 
     private void updateUsers()
     {
-        chat.getUsers().forEach(chatMember -> {
-            String name = chatMember.getName();
-            JCheckBox box = new JCheckBox(name, true);
-            box.setForeground(getForegroundColor());
-            box.setName(name);
-            userPanel.add(box, "wrap");
+        chat.getUsers().forEach(this::addUser);
+    }
+
+    private void addUser(User user)
+    {
+        String name = user.getName();
+        JCheckBox box = new JCheckBox();
+        box.setSelected(true);
+        box.setAction(new AbstractAction() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                groupButtons.clearSelection();
+            }
         });
+        box.setName(name);
+        userPanel.add(box, "wrap");
+        box.setText(name);
     }
 
     private void addChangeThemeButton()
     {
         JButton themeBtn = new JButton();
+        themeBtn.setName("changeTheme");
         themeBtn.setOpaque(true);
         themeBtn.setBorderPainted(false);
-        themeBtn.setName("changeTheme");
-
         themeBtn.setAction(new AbstractAction() {
 
             private static final long serialVersionUID = 1L;
@@ -221,44 +241,35 @@ public class ChatWindow extends ThemedJFrame
 
     private void updateGroups()
     {
-        ButtonGroup groupButtons = new ButtonGroup();
-        chat.getGroups().forEach(group -> {
-            if (group.contains(user)) {
-                String groupName = group.getName();
-                JButton groupButton = new JButton();
-                groupButton.setOpaque(true);
-                groupButton.setBorderPainted(false);
-                groupButton.setName(groupName);
-                groupButton.setBackground(getSecondaryColor());
-                groupButton.setForeground(getForegroundColor());
-                groupButtons.add(groupButton);
-                groupButton.setAction(new AbstractAction() {
-
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        for (Component component : userPanel.getComponents()) {
-                            JCheckBox box = (JCheckBox)component;
-                            box.setSelected(group.contains(box.getText()));
-                        }
-                    }
-                });
-                groupPanel.add(groupButton, "wrap, growx");
-                groupButton.setText(groupName);
-                groupButton.setToolTipText(group.toString());
-            }
-        });
+        chat.getGroups().forEach(this::addGroup);
     }
 
-    private void updateMessageList()
+    private void addGroup(Group group)
     {
-        DefaultListModel<String> model = new DefaultListModel<>();
-        for (String message : user.getMessages()) {
-            model.addElement(message);
+        if (group.contains(user)) {
+            String groupName = group.getName();
+            JToggleButton groupButton = new JToggleButton();
+            groupButton.setOpaque(true);
+            groupButton.setBorderPainted(false);
+            groupButton.setName(groupName);
+            groupButtons.add(groupButton);
+            groupButton.setAction(new AbstractAction() {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    for (Component component : userPanel.getComponents()) {
+                        JCheckBox box = (JCheckBox)component;
+                        box.setSelected(group.contains(box.getName()));
+                    }
+                }
+            });
+            groupPanel.add(groupButton, "wrap, growx");
+            groupButton.setText(groupName);
+            groupButton.setToolTipText(group.toString());
         }
-        messageList.setModel(model);
     }
 
     private void addUserLabel()
@@ -309,7 +320,7 @@ public class ChatWindow extends ThemedJFrame
         for (Component component : userPanel.getComponents()) {
             JCheckBox box = (JCheckBox)component;
             if (box.isSelected()) {
-                users.add(chat.getUser(box.getText()));
+                users.add(chat.getUser(box.getName()));
             }
         }
         return users;
@@ -324,7 +335,7 @@ public class ChatWindow extends ThemedJFrame
         for (Component component : userPanel.getComponents()) {
             JCheckBox box = (JCheckBox)component;
             if (box.isSelected()) {
-                names.add(box.getText());
+                names.add(box.getName());
             }
         }
         return names.toArray(new String[0]);
@@ -337,23 +348,60 @@ public class ChatWindow extends ThemedJFrame
         @Override
         public void update(Observable o, Object obj)
         {
-            switch ((ChangeMode)obj) {
-            case USER:
+            ChangeEvent event = (ChangeEvent)obj;
+            Object eventObject = event.getObject();
+            if (eventObject instanceof String) {
+                messages.addElement((String)eventObject);
+            }
+            else if (eventObject instanceof User) {
                 userPanel.setVisible(false);
-                userPanel.removeAll();
-                updateUsers();
+                User eventUser = (User)eventObject;
+                if (event.getMode() == ADD) {
+                    addUser(eventUser);
+                    updateFrame();
+                }
+                else {
+                    removeUser(eventUser);
+                }
                 userPanel.setVisible(true);
-                break;
-            case MESSAGE:
-                updateMessageList();
-                break;
-            case GROUP:
+            }
+            else if (eventObject instanceof Group) {
                 groupPanel.setVisible(false);
-                groupPanel.removeAll();
-                updateGroups();
+                Group group = (Group)eventObject;
+                if (event.getMode() == ADD) {
+                    addGroup(group);
+                    updateFrame();
+                }
+                else {
+                    removeGroup(group);
+                }
                 groupPanel.setVisible(true);
-                break;
             }
         }
+
+        private void removeUser(User user)
+        {
+            for (Component component : userPanel.getComponents()) {
+                if (component.getName().equals(user.getName())) {
+                    userPanel.remove(component);
+                }
+            }
+        }
+
+        private void removeGroup(Group group)
+        {
+            for (Component component : groupPanel.getComponents()) {
+                if (component.getName().equals(group.getName())) {
+                    groupPanel.remove(component);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateFrame()
+    {
+        super.updateFrame();
+        messageList.setBackground(getSecondaryColor());
     }
 }

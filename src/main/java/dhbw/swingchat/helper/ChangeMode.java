@@ -3,15 +3,11 @@ package dhbw.swingchat.helper;
 public enum ChangeMode
 {
     /**
-     * User was changed.
+     * Object was removed.
      */
-    USER,
+    REMOVE,
     /**
-     * Message was added.
+     * Object was added.
      */
-    MESSAGE,
-    /**
-     * Group was changed.
-     */
-    GROUP;
+    ADD;
 }

@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dhbw.swingchat.helper.ChangeEvent;
 import dhbw.swingchat.helper.ChangeMode;
 import dhbw.swingchat.test.TestObserver;
 
@@ -107,10 +108,13 @@ public class ChatTest
         chat.addObserver(observer);
         assertFalse(observer.getCalled());
 
-        chat.addGroup(new Group("Admins", new User("test")));
+        Group group = new Group("Admins", new User("test"));
+        chat.addGroup(group);
 
         assertTrue(observer.getCalled());
-        assertThat(observer.getObject(), is(ChangeMode.GROUP));
+        ChangeEvent event = (ChangeEvent)observer.getObject();
+        assertThat(event.getMode(), is(ChangeMode.ADD));
+        assertThat(event.getObject(), is(group));
         assertThat(chat.getGroups(), hasSize(1));
     }
 
@@ -126,7 +130,9 @@ public class ChatTest
         chat.removeGroup(group);
 
         assertTrue(observer.getCalled());
-        assertThat(observer.getObject(), is(ChangeMode.GROUP));
+        ChangeEvent event = (ChangeEvent)observer.getObject();
+        assertThat(event.getMode(), is(ChangeMode.REMOVE));
+        assertThat(event.getObject(), is(group));
     }
 
     @Test

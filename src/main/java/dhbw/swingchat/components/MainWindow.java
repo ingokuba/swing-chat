@@ -34,7 +34,7 @@ public class MainWindow extends JFrame
     private JTextField        username;
     private List<ChatWindow>  chatWindows      = new ArrayList<>();
 
-    Chat                      chat             = new Chat();
+    private Chat              chat             = new Chat();
 
     public MainWindow()
     {

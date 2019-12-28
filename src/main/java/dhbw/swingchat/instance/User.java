@@ -7,7 +7,7 @@ import java.util.Observable;
 
 import com.google.gson.annotations.Expose;
 
-import dhbw.swingchat.helper.ChangeMode;
+import dhbw.swingchat.helper.ChangeEvent;
 
 /**
  * User object identified by it's name.
@@ -40,7 +40,7 @@ public class User extends Observable
     {
         messages.add(message);
         setChanged();
-        notifyObservers(ChangeMode.MESSAGE);
+        notifyObservers(ChangeEvent.add(message));
         return this;
     }
 

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.Group;
 import dhbw.swingchat.instance.User;
 import dhbw.swingchat.test.TestUtil;
@@ -145,7 +146,7 @@ public class MainWindowIT
 
         mainWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
-        assertTrue(WindowFinder.findFrame("testName2").using(mainWindow.robot()).button("Groupie").target().isVisible());
+        assertTrue(WindowFinder.findFrame("testName2").using(mainWindow.robot()).toggleButton("Groupie").target().isVisible());
     }
 
     @Test
@@ -163,5 +164,26 @@ public class MainWindowIT
         Group groupie = component.getChat().getGroups().get(0);
         List<User> users = (List<User>)getFieldValue(groupie, "users");
         assertThat(users, hasSize(1));
+    }
+
+    @Test
+    public void should_delete_group_from_chat()
+    {
+        // prepare chat instance
+        User user1 = new User("testName1");
+        User user2 = new User("testName2");
+        Chat chat = component.getChat();
+        // only add user 2 so user 1 can be created by UI
+        chat.addUser(user2);
+        chat.addGroup(new Group("Group1", user1));
+        chat.addGroup(new Group("All", user1, user2));
+        // create user 1
+        mainWindow.textBox("username").enterText("testName1").pressAndReleaseKeys(VK_ENTER);
+
+        // close window of user 1
+        WindowFinder.findFrame("testName1").using(mainWindow.robot()).close();
+
+        // group 'All' still exists
+        assertThat(component.getChat().getGroups(), hasSize(1));
     }
 }

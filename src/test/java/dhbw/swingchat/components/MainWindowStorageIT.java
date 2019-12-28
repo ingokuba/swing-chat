@@ -72,7 +72,7 @@ public class MainWindowStorageIT
         FrameFixture chatWindow = WindowFinder.findFrame("Tester").using(mainWindow.robot());
 
         chatWindow.checkBox("Tester").requireSelected();
-        chatWindow.button("Group").requireVisible();
+        chatWindow.toggleButton("Group").requireVisible();
         assertThat(chatWindow.list().contents(), arrayContaining("Hello"));
     }
 

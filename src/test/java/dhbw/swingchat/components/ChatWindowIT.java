@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import java.awt.Dialog;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -20,6 +21,7 @@ import javax.swing.JList;
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.exception.WaitTimedOutError;
+import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.junit.After;
 import org.junit.Before;
@@ -128,7 +130,7 @@ public class ChatWindowIT
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         assertThat(chat.getGroups(), hasSize(1));
-        chatWindow.button("Groupie").requireVisible().requireText("Groupie").requireToolTip("Chatter, Second");
+        chatWindow.toggleButton("Groupie").requireVisible().requireText("Groupie").requireToolTip("Chatter, Second");
     }
 
     @Test
@@ -164,7 +166,7 @@ public class ChatWindowIT
         assertThat(chat.getGroups(), hasSize(0));
 
         Assertions.assertThrows(WaitTimedOutError.class, () -> {
-            chatWindow.dialog();
+            WindowFinder.findDialog(Dialog.class).withTimeout(100).using(chatWindow.robot());
         });
     }
 
@@ -195,6 +197,19 @@ public class ChatWindowIT
     }
 
     @Test
+    public void should_not_remove_group_on_close_if_user_not_in_it()
+    {
+        chatWindow.checkBox(user.getName()).click();
+        chatWindow.button("newGroup").click();
+        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
+        assertThat(chat.getGroups(), hasSize(1));
+
+        chatWindow.close();
+
+        assertThat(chat.getGroups(), hasSize(1));
+    }
+
+    @Test
     public void should_select_users_in_group()
     {
         chatWindow.checkBox("Second").click();
@@ -202,7 +217,7 @@ public class ChatWindowIT
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         chatWindow.checkBox("Chatter").click();
-        chatWindow.button("Groupie").click();
+        chatWindow.toggleButton("Groupie").click();
 
         chatWindow.checkBox("Chatter").requireSelected();
         chatWindow.checkBox("Second").requireNotSelected();
