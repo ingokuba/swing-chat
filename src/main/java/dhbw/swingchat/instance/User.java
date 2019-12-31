@@ -1,5 +1,7 @@
 package dhbw.swingchat.instance;
 
+import static java.util.Objects.hash;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,5 +49,21 @@ public class User extends Observable
     public List<String> getMessages()
     {
         return messages;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof User) {
+            User user = (User)obj;
+            return getName().equals(user.getName());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return hash(name);
     }
 }

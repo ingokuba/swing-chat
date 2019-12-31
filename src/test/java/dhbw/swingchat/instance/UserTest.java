@@ -1,6 +1,8 @@
 package dhbw.swingchat.instance;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -38,5 +40,11 @@ public class UserTest
         ChangeEvent event = (ChangeEvent)observer.getObject();
         assertThat(event.getMode(), is(ChangeMode.ADD));
         assertThat(event.getObject(), is(message));
+    }
+
+    @Test
+    public void should_not_equal_another_instance()
+    {
+        assertThat(new User("Peter"), not(equalTo(new Object())));
     }
 }

@@ -107,9 +107,11 @@ public class ChatWindow extends ThemedJFrame
                 List<Group> copy = new ArrayList<>();
                 copy.addAll(chat.getGroups());
                 copy.forEach(group -> {
-                    group.remove(user);
-                    if (group.size() == 0) {
-                        chat.removeGroup(group);
+                    if (group.contains(user)) {
+                        group.remove(user);
+                        if (group.size() == 0) {
+                            chat.removeGroup(group);
+                        }
                     }
                 });
                 super.windowClosing(e);

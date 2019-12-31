@@ -101,7 +101,7 @@ public class GroupTest
         User user = new User("Hans");
         Group group = new Group("Test", user);
 
-        group.remove(user);
+        group.remove(new User("Hans"));
 
         assertFalse(group.contains("Hans"));
     }
