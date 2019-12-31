@@ -1,12 +1,15 @@
 package dhbw.swingchat.instance;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dhbw.swingchat.helper.ChangeEvent;
 import dhbw.swingchat.helper.ChangeMode;
 import dhbw.swingchat.test.TestObserver;
 
@@ -30,9 +33,18 @@ public class UserTest
         TestObserver observer = new TestObserver(User.class);
         user.addObserver(observer);
 
-        user.message("Test message");
+        String message = "Test message";
+        user.message(message);
 
         assertTrue(observer.getCalled());
-        assertThat(observer.getObject(), is(ChangeMode.MESSAGE));
+        ChangeEvent event = (ChangeEvent)observer.getObject();
+        assertThat(event.getMode(), is(ChangeMode.ADD));
+        assertThat(event.getObject(), is(message));
+    }
+
+    @Test
+    public void should_not_equal_another_instance()
+    {
+        assertThat(new User("Peter"), not(equalTo(new Object())));
     }
 }

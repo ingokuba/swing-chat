@@ -1,5 +1,7 @@
 package dhbw.swingchat.instance;
 
+import static java.util.Objects.hash;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.Observable;
 
 import com.google.gson.annotations.Expose;
 
-import dhbw.swingchat.helper.ChangeMode;
+import dhbw.swingchat.helper.ChangeEvent;
 
 /**
  * User object identified by it's name.
@@ -40,12 +42,28 @@ public class User extends Observable
     {
         messages.add(message);
         setChanged();
-        notifyObservers(ChangeMode.MESSAGE);
+        notifyObservers(ChangeEvent.add(message));
         return this;
     }
 
     public List<String> getMessages()
     {
         return messages;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof User) {
+            User user = (User)obj;
+            return getName().equals(user.getName());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return hash(name);
     }
 }

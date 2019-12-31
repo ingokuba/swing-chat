@@ -4,11 +4,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import java.awt.Container;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.Container;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,25 +18,28 @@ import org.junit.jupiter.api.BeforeEach;
 import dhbw.swingchat.helper.ThemedColors;
 import dhbw.swingchat.helper.ThemedJFrame;
 
-public class DarkJFrameIT
+public class ThemedJFrameIT
 {
 
     private ThemedJFrame frame;
-    private JButton testButton;
+    private JButton      testButton;
 
     @Before
     @BeforeEach
-    public void setupFrame() {
+    public void setupFrame()
+    {
         frame = new ThemedJFrame();
     }
 
     @Test
-    public void sould_be_light_mode(){
+    public void sould_be_light_mode()
+    {
         assertThat("Init with light-mode", frame.getDarkModeBoolean(), is(Boolean.FALSE));
         assertThat(frame.getForegroundColor(), is(ThemedColors.lightForeground));
     }
 
-    public void populate_frame(){
+    public void populate_frame()
+    {
         frame.add(new JButton());
         frame.add(new JCheckBox());
         frame.add(new JTextField());
@@ -50,7 +54,8 @@ public class DarkJFrameIT
     }
 
     @Test
-    public void should_switch_mode(){
+    public void should_switch_mode()
+    {
         frame.toggleTheme();
         assertThat("switched to dark-mode", frame.getDarkModeBoolean(), is(Boolean.TRUE));
         assertThat(frame.getBackgroundColor(), is(ThemedColors.darkBackround));
@@ -60,7 +65,8 @@ public class DarkJFrameIT
     }
 
     @Test
-    public void validate_frame_changed(){
+    public void validate_frame_changed()
+    {
         populate_frame();
         frame.toggleTheme();
 
@@ -68,7 +74,8 @@ public class DarkJFrameIT
     }
 
     @Test
-    public void validate_test_button_changed(){
+    public void validate_test_button_changed()
+    {
         populate_frame();
         frame.toggleTheme();
 
@@ -76,10 +83,10 @@ public class DarkJFrameIT
     }
 
     @Test
-    public void should_update_frame(){
+    public void should_update_frame()
+    {
         populate_frame();
 
         assertDoesNotThrow(() -> frame.updateFrame());
     }
 }
-

@@ -7,7 +7,7 @@ import java.util.Observable;
 
 import com.google.gson.annotations.Expose;
 
-import dhbw.swingchat.helper.ChangeMode;;
+import dhbw.swingchat.helper.ChangeEvent;
 
 /**
  * Collection of all users and their names.
@@ -31,7 +31,7 @@ public class Chat extends Observable
         if (!users.contains(user)) {
             users.add(user);
             setChanged();
-            notifyObservers(ChangeMode.USER);
+            notifyObservers(ChangeEvent.add(user));
         }
         return this;
     }
@@ -43,7 +43,7 @@ public class Chat extends Observable
     {
         if (users.remove(user)) {
             setChanged();
-            notifyObservers(ChangeMode.USER);
+            notifyObservers(ChangeEvent.remove(user));
         }
         return this;
     }
@@ -78,7 +78,7 @@ public class Chat extends Observable
     {
         groups.add(group);
         setChanged();
-        notifyObservers(ChangeMode.GROUP);
+        notifyObservers(ChangeEvent.add(group));
         return this;
     }
 
@@ -86,7 +86,7 @@ public class Chat extends Observable
     {
         if (groups.remove(group)) {
             setChanged();
-            notifyObservers(ChangeMode.GROUP);
+            notifyObservers(ChangeEvent.remove(group));
         }
         return this;
     }
