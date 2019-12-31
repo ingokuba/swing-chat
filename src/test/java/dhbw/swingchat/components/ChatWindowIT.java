@@ -6,8 +6,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -209,9 +209,22 @@ public class ChatWindowIT
     }
 
     @Test
+    public void should_change_to_darkmode()
+    {
+        chatWindow.button("changeTheme").click();
+    }
+
+    @Test
     public void should_have_button_icon()
     {
         assertThat(chatWindow.button("newGroup").target().getIcon(), notNullValue());
+    }
+
+    @Test
+    public void should_return_null_image()
+    {
+        ChatWindow windowObject = (ChatWindow)chatWindow.target();
+        assertThat(windowObject.getPNGImageNamed("xyz"), nullValue());
     }
 
     @org.junit.Test

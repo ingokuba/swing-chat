@@ -141,7 +141,7 @@ public class MainWindowIT
         mainWindow.textBox("username").enterText("testName1").pressAndReleaseKeys(VK_ENTER);
         mainWindow.textBox("username").enterText("testName2").pressAndReleaseKeys(VK_ENTER);
 
-        WindowFinder.findFrame("testName1").using(mainWindow.robot()).button().click();
+        WindowFinder.findFrame("testName1").using(mainWindow.robot()).button("newGroup").click();
 
         mainWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
@@ -155,7 +155,7 @@ public class MainWindowIT
         mainWindow.textBox("username").enterText("testName1").pressAndReleaseKeys(VK_ENTER);
         mainWindow.textBox("username").enterText("testName2").pressAndReleaseKeys(VK_ENTER);
 
-        WindowFinder.findFrame("testName1").using(mainWindow.robot()).button().click();
+        WindowFinder.findFrame("testName1").using(mainWindow.robot()).button("newGroup").click();
 
         mainWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 

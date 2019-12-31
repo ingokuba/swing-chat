@@ -1,8 +1,9 @@
 package dhbw.swingchat.components;
 
-import static dhbw.swingchat.components.MessageUtil.showWarning;
+import static dhbw.swingchat.helper.MessageUtil.showWarning;
 import static javax.swing.JOptionPane.showInputDialog;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -20,13 +21,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import dhbw.swingchat.ChangeMode;
+import dhbw.swingchat.helper.ChangeMode;
+import dhbw.swingchat.helper.ThemedJFrame;
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.Group;
 import dhbw.swingchat.instance.User;
@@ -35,7 +36,7 @@ import net.miginfocom.swing.MigLayout;
 /**
  * Chat window for a specific user.
  */
-public class ChatWindow extends JFrame
+public class ChatWindow extends ThemedJFrame
 {
 
     private static final long serialVersionUID = 1L;
@@ -58,6 +59,7 @@ public class ChatWindow extends JFrame
         userPanel = new JPanel(new MigLayout());
         updateUsers();
         add(userPanel);
+
         // new group button:
         addGroupButton();
 
@@ -75,12 +77,21 @@ public class ChatWindow extends JFrame
         addUserInput();
         add(inputPanel, "growx, pushx, span");
 
+        addChangeThemeButton();
+
         setName(user.getName());
         setTitle(user.getName());
         setSize(500, 500);
         setVisible(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowOpened(WindowEvent e)
+            {
+                updateFrame();
+                messageList.setBackground(getSecondaryColor());
+            }
 
             @Override
             public void windowClosing(WindowEvent e)
@@ -104,14 +115,59 @@ public class ChatWindow extends JFrame
         chat.getUsers().forEach(chatMember -> {
             String name = chatMember.getName();
             JCheckBox box = new JCheckBox(name, true);
+            box.setForeground(getForegroundColor());
             box.setName(name);
             userPanel.add(box, "wrap");
         });
     }
 
+    private void addChangeThemeButton()
+    {
+        JButton themeBtn = new JButton();
+        themeBtn.setOpaque(true);
+        themeBtn.setBorderPainted(false);
+        themeBtn.setName("changeTheme");
+
+        themeBtn.setAction(new AbstractAction() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                toggleTheme();
+                updateThemeButton(themeBtn);
+            }
+        });
+
+        updateThemeButton(themeBtn);
+        add(themeBtn);
+    }
+
+    private void updateThemeButton(JButton themeBtn)
+    {
+        Color chatColor = getSecondaryColor();
+        this.messageList.setBackground(chatColor);
+
+        String imageName = this.getDarkModeBoolean() ? "light" : "dark";
+        Image themeIcon = getPNGImageNamed(imageName);
+
+        String name = this.getDarkModeBoolean() ? "Light Mode" : "Dark Mode";
+
+        if (themeIcon != null) {
+            themeBtn.setIcon(new ImageIcon(themeIcon.getScaledInstance(50, 50, Image.SCALE_DEFAULT)));
+            themeBtn.setToolTipText(name);
+        }
+        else {
+            themeBtn.setText(name);
+        }
+    }
+
     private void addGroupButton()
     {
         JButton addGroup = new JButton();
+        addGroup.setOpaque(true);
+        addGroup.setBorderPainted(false);
         addGroup.setName("newGroup");
         addGroup.setAction(new AbstractAction() {
 
@@ -126,8 +182,8 @@ public class ChatWindow extends JFrame
                     return;
                 }
                 String groupName = showInputDialog("Enter group name");
-                
-                if (groupName == null) {    //Cancel / Escape / Close
+
+                if (groupName == null) { //Cancel / Escape / Close
                     return;
                 }
                 if (groupName.isEmpty()) {
@@ -144,7 +200,7 @@ public class ChatWindow extends JFrame
             }
         });
         add(addGroup);
-        Image groupIcon = getGroupIcon();
+        Image groupIcon = getPNGImageNamed("group_add");
         if (groupIcon != null) {
             addGroup.setIcon(new ImageIcon(groupIcon.getScaledInstance(50, 50, Image.SCALE_DEFAULT)));
             addGroup.setToolTipText("New group");
@@ -154,10 +210,10 @@ public class ChatWindow extends JFrame
         }
     }
 
-    private Image getGroupIcon()
+    public Image getPNGImageNamed(String imageName)
     {
         try {
-            return ImageIO.read(getClass().getResource("/img/group_add.png"));
+            return ImageIO.read(getClass().getResource("/img/" + imageName + ".png"));
         } catch (Exception ex) {
             return null;
         }
@@ -170,7 +226,11 @@ public class ChatWindow extends JFrame
             if (group.contains(user)) {
                 String groupName = group.getName();
                 JButton groupButton = new JButton();
+                groupButton.setOpaque(true);
+                groupButton.setBorderPainted(false);
                 groupButton.setName(groupName);
+                groupButton.setBackground(getSecondaryColor());
+                groupButton.setForeground(getForegroundColor());
                 groupButtons.add(groupButton);
                 groupButton.setAction(new AbstractAction() {
 

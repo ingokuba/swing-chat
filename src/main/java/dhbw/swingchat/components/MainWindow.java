@@ -1,7 +1,7 @@
 package dhbw.swingchat.components;
 
-import static dhbw.swingchat.components.MessageUtil.showError;
-import static dhbw.swingchat.components.MessageUtil.showWarning;
+import static dhbw.swingchat.helper.MessageUtil.showError;
+import static dhbw.swingchat.helper.MessageUtil.showWarning;
 import static dhbw.swingchat.storage.Storage.loadChat;
 import static dhbw.swingchat.storage.Storage.storeChat;
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;

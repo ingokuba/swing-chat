@@ -7,7 +7,7 @@ import java.util.Observable;
 
 import com.google.gson.annotations.Expose;
 
-import dhbw.swingchat.ChangeMode;
+import dhbw.swingchat.helper.ChangeMode;
 
 /**
  * User object identified by it's name.

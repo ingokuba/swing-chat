@@ -1,4 +1,4 @@
-package dhbw.swingchat.components;
+package dhbw.swingchat.helper;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;

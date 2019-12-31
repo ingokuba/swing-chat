@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dhbw.swingchat.ChangeMode;
+import dhbw.swingchat.helper.ChangeMode;
 import dhbw.swingchat.test.TestObserver;
 
 /**
