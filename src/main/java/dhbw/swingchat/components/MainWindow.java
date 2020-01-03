@@ -36,6 +36,9 @@ public class MainWindow extends JFrame
 
     private Chat              chat             = new Chat();
 
+    /**
+     * Build the main window of the chat application.
+     */
     public MainWindow()
     {
         Chat loadedChat = loadChat();

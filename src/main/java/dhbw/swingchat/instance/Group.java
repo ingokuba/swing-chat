@@ -54,6 +54,9 @@ public class Group
         return contains(user.getName());
     }
 
+    /**
+     * Check whether user with the given name is in this group.
+     */
     public boolean contains(String name)
     {
         for (User user : users) {
@@ -69,6 +72,9 @@ public class Group
         return users.size();
     }
 
+    /**
+     * Compared group has to have the same name and users.
+     */
     @Override
     public boolean equals(Object obj)
     {
@@ -96,6 +102,9 @@ public class Group
         return hash(name, users);
     }
 
+    /**
+     * Returns user names separated with commas.
+     */
     @Override
     public String toString()
     {
