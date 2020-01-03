@@ -1,5 +1,5 @@
 [:de:](DOCUMENTATION_de.md)
-# Advanced Software Enineering Project (DHBW Stuttgart)
+# Advanced Software Engineering Project (DHBW Stuttgart)
 ## A chat simulation
 
 
