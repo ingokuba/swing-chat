@@ -1,4 +1,4 @@
-package dhbw.swingchat.test;
+package dhbw.swingchat.helper;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -11,57 +11,38 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import dhbw.swingchat.helper.ThemedColors;
-import dhbw.swingchat.helper.ThemedJFrame;
-
-public class ThemedJFrameIT
+/**
+ * Unit tests for abstract class {@link ThemedJFrame}.
+ */
+public class ThemedJFrameTest
 {
 
     private ThemedJFrame frame;
     private JButton      testButton;
 
-    @Before
     @BeforeEach
     public void setupFrame()
     {
-        frame = new ThemedJFrame();
+        frame = new TestFrame();
     }
 
     @Test
-    public void sould_be_light_mode()
+    public void sould_default_to_light_mode()
     {
-        assertThat("Init with light-mode", frame.getDarkModeBoolean(), is(Boolean.FALSE));
         assertThat(frame.getForegroundColor(), is(ThemedColors.lightForeground));
-    }
-
-    public void populate_frame()
-    {
-        frame.add(new JButton());
-        frame.add(new JCheckBox());
-        frame.add(new JTextField());
-
-        Container superContainer = new Container();
-        JPanel subPanel = new JPanel();
-        this.testButton = new JButton();
-
-        subPanel.add(testButton);
-        superContainer.add(subPanel);
-        frame.add(superContainer);
     }
 
     @Test
     public void should_switch_mode()
     {
         frame.toggleTheme();
-        assertThat("switched to dark-mode", frame.getDarkModeBoolean(), is(Boolean.TRUE));
         assertThat(frame.getBackgroundColor(), is(ThemedColors.darkBackround));
 
         frame.toggleTheme();
-        assertThat("switch back to light-mode again", frame.getDarkModeBoolean(), is(Boolean.FALSE));
+        assertThat(frame.getBackgroundColor(), is(ThemedColors.lightBackround));
     }
 
     @Test
@@ -88,5 +69,26 @@ public class ThemedJFrameIT
         populate_frame();
 
         assertDoesNotThrow(() -> frame.updateFrame());
+    }
+
+    private void populate_frame()
+    {
+        frame.add(new JButton());
+        frame.add(new JCheckBox());
+        frame.add(new JTextField());
+
+        Container superContainer = new Container();
+        JPanel subPanel = new JPanel();
+        this.testButton = new JButton();
+
+        subPanel.add(testButton);
+        superContainer.add(subPanel);
+        frame.add(superContainer);
+    }
+
+    private class TestFrame extends ThemedJFrame
+    {
+
+        private static final long serialVersionUID = 1L;
     }
 }
