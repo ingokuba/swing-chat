@@ -14,7 +14,7 @@
 
 # What it does <a name="1"><a/>
 
-This project demonstrates a chat application on one local computer. Once the project is build and started, there is a so called "Main Window". It provides a method for new 'users' to join the chat. After inserting a name which is not yet taken by another user and confirmation, a new window will open, showing the chat client for the new user.
+This project demonstrates a chat application on one local computer. Once the project is built and started, there is a so called "Main Window". It provides a method for new users to join the chat. After inserting a name which is not yet taken by another user and confirmation, a new window will open, showing the chat client for the new user.
 Each client window has a list with all active users in the top left. The user of that window<sup>1</sup> can select who sould receive the next message he/she sends.
 On the top right side one can manage groups. A group contains all currently selected users. The user can see all the groups he is part of. So, by clicking on a group the just described list of usernames will be auto-selected according to the group. **For the same selection of users** two groups can't have the same name.
 
