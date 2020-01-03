@@ -1,4 +1,5 @@
-# Advanced Software Engineering Project (DHBW Stuttgart)
+[:gb:](DOCUMENTATION.md)
+# Advanced Software Engineering Projekt (DHBW Stuttgart)
 ## Eine Chat Simulation
 
 
