@@ -34,6 +34,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import dhbw.swingchat.helper.ThemedColors;
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.User;
 
@@ -109,6 +110,7 @@ public class ChatWindowIT
         chatWindow.textBox("userInput").pressAndReleaseKeys(VK_ENTER);
 
         chatWindow.list("messages").requireItemCount(0);
+        assertThat(user.getMessages(), hasSize(0));
     }
 
     @Test
@@ -226,6 +228,7 @@ public class ChatWindowIT
     public void should_change_to_darkmode()
     {
         chatWindow.button("changeTheme").click();
+        assertThat(chatWindow.list("messages").background().target(), is(ThemedColors.darkSecondary));
     }
 
     @Test

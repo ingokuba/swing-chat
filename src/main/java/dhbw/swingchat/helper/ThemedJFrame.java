@@ -23,7 +23,7 @@ public abstract class ThemedJFrame extends JFrame
         this.isDarkMode = false;
     }
 
-    public Boolean getDarkModeBoolean()
+    public boolean getDarkModeBoolean()
     {
         return isDarkMode;
     }
