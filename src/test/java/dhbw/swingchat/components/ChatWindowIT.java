@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
@@ -35,6 +34,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import dhbw.swingchat.helper.ThemedColors;
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.User;
 
@@ -110,6 +110,7 @@ public class ChatWindowIT
         chatWindow.textBox("userInput").pressAndReleaseKeys(VK_ENTER);
 
         chatWindow.list("messages").requireItemCount(0);
+        assertThat(user.getMessages(), hasSize(0));
     }
 
     @Test
@@ -227,19 +228,13 @@ public class ChatWindowIT
     public void should_change_to_darkmode()
     {
         chatWindow.button("changeTheme").click();
+        assertThat(chatWindow.list("messages").background().target(), is(ThemedColors.darkSecondary));
     }
 
     @Test
     public void should_have_button_icon()
     {
         assertThat(chatWindow.button("newGroup").target().getIcon(), notNullValue());
-    }
-
-    @Test
-    public void should_return_null_image()
-    {
-        ChatWindow windowObject = (ChatWindow)chatWindow.target();
-        assertThat(windowObject.getPNGImageNamed("xyz"), nullValue());
     }
 
     @org.junit.Test

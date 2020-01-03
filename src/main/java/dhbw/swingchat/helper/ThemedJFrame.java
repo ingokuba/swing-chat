@@ -8,19 +8,22 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
-public class ThemedJFrame extends JFrame
+/**
+ * Frame that can change between dark and light mode.
+ */
+public abstract class ThemedJFrame extends JFrame
 {
 
     private static final long serialVersionUID = 1L;
+
+    private boolean           isDarkMode;
 
     public ThemedJFrame()
     {
         this.isDarkMode = false;
     }
 
-    private boolean isDarkMode;
-
-    public Boolean getDarkModeBoolean()
+    public boolean getDarkModeBoolean()
     {
         return isDarkMode;
     }
@@ -47,19 +50,22 @@ public class ThemedJFrame extends JFrame
 
     public Color getForegroundColor()
     {
-        return this.isDarkMode ? ThemedColors.darkForeground : ThemedColors.lightForeground;
+        return isDarkMode ? ThemedColors.darkForeground : ThemedColors.lightForeground;
     }
 
     public Color getBackgroundColor()
     {
-        return this.isDarkMode ? ThemedColors.darkBackround : ThemedColors.lightBackround;
+        return isDarkMode ? ThemedColors.darkBackround : ThemedColors.lightBackround;
     }
 
     public Color getSecondaryColor()
     {
-        return this.isDarkMode ? ThemedColors.darkSecondary : ThemedColors.lightSecondary;
+        return isDarkMode ? ThemedColors.darkSecondary : ThemedColors.lightSecondary;
     }
 
+    /**
+     * Update colors of the frame depending on the mode.
+     */
     public void updateFrame()
     {
         Color bg = getBackgroundColor();
@@ -77,7 +83,7 @@ public class ThemedJFrame extends JFrame
      */
     public void toggleTheme()
     {
-        this.isDarkMode = !this.isDarkMode;
+        isDarkMode = !isDarkMode;
         updateFrame();
     }
 }

@@ -2,6 +2,7 @@ package dhbw.swingchat.components;
 
 import static dhbw.swingchat.helper.ChangeMode.ADD;
 import static dhbw.swingchat.helper.MessageUtil.showWarning;
+import static dhbw.swingchat.storage.Storage.getPngImage;
 import static javax.swing.JOptionPane.showInputDialog;
 
 import java.awt.Color;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -54,6 +54,12 @@ public class ChatWindow extends ThemedJFrame
     private ButtonGroup              groupButtons     = new ButtonGroup();
     private DefaultListModel<String> messages         = new DefaultListModel<>();
 
+    /**
+     * Build a new chat window for a given user.
+     * 
+     * @param user1 User of this window.
+     * @param chat1 Reference to the chat object of the application.
+     */
     public ChatWindow(User user1, Chat chat1)
     {
         setLayout(new MigLayout("fill"));
@@ -62,14 +68,14 @@ public class ChatWindow extends ThemedJFrame
         this.chat = chat1;
         this.chat.addObserver(new ChatObserver());
         userPanel = new JPanel(new MigLayout());
-        updateUsers();
+        addUsers();
         add(userPanel);
 
         // new group button:
-        addGroupButton();
+        addCreateGroupButton();
 
         groupPanel = new JPanel(new MigLayout());
-        updateGroups();
+        addGroups();
         add(groupPanel, "wrap");
 
         messageList = new JList<>();
@@ -119,11 +125,17 @@ public class ChatWindow extends ThemedJFrame
         });
     }
 
-    private void updateUsers()
+    /**
+     * Add all user checkboxes to the frame.
+     */
+    private void addUsers()
     {
         chat.getUsers().forEach(this::addUser);
     }
 
+    /**
+     * Add a user checkbox with the name of the given user.
+     */
     private void addUser(User user)
     {
         String name = user.getName();
@@ -144,6 +156,9 @@ public class ChatWindow extends ThemedJFrame
         box.setText(name);
     }
 
+    /**
+     * Add button to change the UI theme to the frame.
+     */
     private void addChangeThemeButton()
     {
         JButton themeBtn = new JButton();
@@ -166,13 +181,18 @@ public class ChatWindow extends ThemedJFrame
         add(themeBtn);
     }
 
+    /**
+     * Update the button depending on selected color theme.
+     * 
+     * @param themeBtn Button to change color theme.
+     */
     private void updateThemeButton(JButton themeBtn)
     {
         Color chatColor = getSecondaryColor();
         this.messageList.setBackground(chatColor);
 
         String imageName = this.getDarkModeBoolean() ? "light" : "dark";
-        Image themeIcon = getPNGImageNamed(imageName);
+        Image themeIcon = getPngImage(imageName);
 
         String name = this.getDarkModeBoolean() ? "Light Mode" : "Dark Mode";
 
@@ -185,7 +205,10 @@ public class ChatWindow extends ThemedJFrame
         }
     }
 
-    private void addGroupButton()
+    /**
+     * Add the button for creating groups to the frame.
+     */
+    private void addCreateGroupButton()
     {
         JButton addGroup = new JButton();
         addGroup.setOpaque(true);
@@ -222,7 +245,7 @@ public class ChatWindow extends ThemedJFrame
             }
         });
         add(addGroup);
-        Image groupIcon = getPNGImageNamed("group_add");
+        Image groupIcon = getPngImage("group_add");
         if (groupIcon != null) {
             addGroup.setIcon(new ImageIcon(groupIcon.getScaledInstance(50, 50, Image.SCALE_DEFAULT)));
             addGroup.setToolTipText("New group");
@@ -232,20 +255,17 @@ public class ChatWindow extends ThemedJFrame
         }
     }
 
-    public Image getPNGImageNamed(String imageName)
-    {
-        try {
-            return ImageIO.read(getClass().getResource("/img/" + imageName + ".png"));
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    private void updateGroups()
+    /**
+     * Add all group buttons to the frame.
+     */
+    private void addGroups()
     {
         chat.getGroups().forEach(this::addGroup);
     }
 
+    /**
+     * Add a group button for the given group.
+     */
     private void addGroup(Group group)
     {
         if (group.contains(user)) {
@@ -274,6 +294,9 @@ public class ChatWindow extends ThemedJFrame
         }
     }
 
+    /**
+     * Add the username in front of the input field.
+     */
     private void addUserLabel()
     {
         JLabel userName = new JLabel();
@@ -281,6 +304,9 @@ public class ChatWindow extends ThemedJFrame
         userName.setText(user.getName() + ": ");
     }
 
+    /**
+     * Add the user input field.
+     */
     private void addUserInput()
     {
         JTextField userInput = new JTextField();
@@ -343,6 +369,9 @@ public class ChatWindow extends ThemedJFrame
         return names.toArray(new String[0]);
     }
 
+    /**
+     * Reacts to changes in the chat and user objects.
+     */
     private class ChatObserver
         implements Observer
     {
@@ -381,6 +410,11 @@ public class ChatWindow extends ThemedJFrame
             }
         }
 
+        /**
+         * Remove user checkbox from the user panel.
+         * 
+         * @param user User to look for.
+         */
         private void removeUser(User user)
         {
             for (Component component : userPanel.getComponents()) {
@@ -390,6 +424,11 @@ public class ChatWindow extends ThemedJFrame
             }
         }
 
+        /**
+         * Remove group button from the group panel.
+         * 
+         * @param group Group to look for.
+         */
         private void removeGroup(Group group)
         {
             for (Component component : groupPanel.getComponents()) {

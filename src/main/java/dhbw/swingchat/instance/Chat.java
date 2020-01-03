@@ -53,6 +53,12 @@ public class Chat extends Observable
         return users;
     }
 
+    /**
+     * Find user by name.
+     * 
+     * @param name Username to look for.
+     * @return User object if found, else null.
+     */
     public User getUser(String name)
     {
         for (User user : users) {
@@ -74,6 +80,9 @@ public class Chat extends Observable
         return this;
     }
 
+    /**
+     * Add a group to the list. Notifies observers with the added group.
+     */
     public Chat addGroup(Group group)
     {
         groups.add(group);
@@ -82,6 +91,9 @@ public class Chat extends Observable
         return this;
     }
 
+    /**
+     * Removes a group from the list. Notifies observers with the removed group.
+     */
     public Chat removeGroup(Group group)
     {
         if (groups.remove(group)) {
@@ -96,6 +108,11 @@ public class Chat extends Observable
         return groups;
     }
 
+    /**
+     * Find a group in this chat.
+     * 
+     * @return The existing instance in the list.
+     */
     public Group getGroup(Group group)
     {
         for (Group existing : groups) {
