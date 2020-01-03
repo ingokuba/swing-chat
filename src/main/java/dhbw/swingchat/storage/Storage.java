@@ -12,9 +12,9 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import dhbw.swingchat.instance.Chat;
-import dhbw.swingchat.instance.User;
 
 public class Storage
 {
@@ -32,8 +32,7 @@ public class Storage
     public static final void storeChat(Chat chat)
         throws IOException
     {
-        deleteObservers(chat);
-        String json = new Gson().toJson(chat);
+        String json = gson().toJson(chat);
         Files.write(PATH, json.getBytes());
     }
 
@@ -43,7 +42,7 @@ public class Storage
     public static final Chat loadChat()
     {
         try (BufferedReader reader = Files.newBufferedReader(PATH, UTF_8)) {
-            return new Gson().fromJson(reader, Chat.class);
+            return gson().fromJson(reader, Chat.class);
         } catch (IOException e) {
             return null;
         }
@@ -64,9 +63,8 @@ public class Storage
         }
     }
 
-    private static void deleteObservers(Chat chat)
+    private static Gson gson()
     {
-        chat.deleteObservers();
-        chat.getUsers().forEach(User::deleteObservers);
+        return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     }
 }

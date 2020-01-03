@@ -6,16 +6,16 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+import java.beans.PropertyChangeEvent;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dhbw.swingchat.helper.ChangeEvent;
-import dhbw.swingchat.helper.ChangeMode;
-import dhbw.swingchat.test.TestObserver;
+import dhbw.swingchat.test.TestListener;
 
 /**
  * Unit tests for the {@link Chat} object.
@@ -77,74 +77,75 @@ public class ChatTest
     }
 
     @Test
-    public void should_notify_observer_when_user_added()
+    public void should_notify_listener_when_user_added()
     {
-        TestObserver observer = new TestObserver(Chat.class);
-        chat.addObserver(observer);
+        TestListener listener = new TestListener();
+        chat.addPropertyChangeListener(listener);
 
         chat.addUser(new User("test"));
 
-        assertTrue(observer.getCalled());
+        assertNotNull(listener.getEvent());
     }
 
     @Test
-    public void should_notify_observer_when_user_removed()
+    public void should_notify_listener_when_user_removed()
     {
         User user = new User("test");
         chat.addUser(user);
-        TestObserver observer = new TestObserver(Chat.class);
-        chat.addObserver(observer);
-        assertFalse(observer.getCalled());
+        TestListener listener = new TestListener();
+        chat.addPropertyChangeListener(listener);
+        assertNull(listener.getEvent());
 
         chat.removeUser(user);
 
-        assertTrue(observer.getCalled());
+        assertNotNull(listener.getEvent());
     }
 
     @Test
-    public void should_notify_observer_when_group_added()
+    public void should_notify_listener_when_group_added()
     {
-        TestObserver observer = new TestObserver(Chat.class);
-        chat.addObserver(observer);
-        assertFalse(observer.getCalled());
+        TestListener listener = new TestListener();
+        chat.addPropertyChangeListener(listener);
+        assertNull(listener.getEvent());
 
         Group group = new Group("Admins", new User("test"));
         chat.addGroup(group);
 
-        assertTrue(observer.getCalled());
-        ChangeEvent event = (ChangeEvent)observer.getObject();
-        assertThat(event.getMode(), is(ChangeMode.ADD));
-        assertThat(event.getObject(), is(group));
+        PropertyChangeEvent event = listener.getEvent();
+        assertThat(event.getPropertyName(), is("groups"));
+        assertThat(event.getOldValue(), nullValue());
+        assertThat(event.getNewValue(), is(group));
         assertThat(chat.getGroups(), hasSize(1));
     }
 
     @Test
-    public void should_notify_observer_when_group_removed()
+    public void should_notify_listener_when_group_removed()
     {
         Group group = new Group("Admins", new User("test"));
         chat.addGroup(group);
-        TestObserver observer = new TestObserver(Chat.class);
-        chat.addObserver(observer);
-        assertFalse(observer.getCalled());
+        TestListener listener = new TestListener();
+        chat.addPropertyChangeListener(listener);
+        assertNull(listener.getEvent());
 
         chat.removeGroup(group);
 
-        assertTrue(observer.getCalled());
-        ChangeEvent event = (ChangeEvent)observer.getObject();
-        assertThat(event.getMode(), is(ChangeMode.REMOVE));
-        assertThat(event.getObject(), is(group));
+        assertNotNull(listener.getEvent());
+        PropertyChangeEvent event = listener.getEvent();
+        assertThat(event.getPropertyName(), is("groups"));
+        assertThat(event.getOldValue(), is(group));
+        assertThat(event.getNewValue(), nullValue());
     }
 
     @Test
-    public void should_not_notify_observer_when_group_is_not_removed()
+    public void should_not_notify_listener_when_group_is_not_removed()
     {
         Group group = new Group("Admins", new User("test"));
-        TestObserver observer = new TestObserver(Chat.class);
-        chat.addObserver(observer);
+        TestListener listener = new TestListener();
+        chat.addPropertyChangeListener(listener);
 
         chat.removeGroup(group);
 
-        assertFalse(observer.getCalled());
+        assertNull(listener.getEvent());
     }
 
     @Test
@@ -188,14 +189,14 @@ public class ChatTest
     }
 
     @Test
-    public void should_not_notify_observer_when_user_is_not_removed()
+    public void should_not_notify_listener_when_user_is_not_removed()
     {
         chat.addUser(new User("Peter"));
-        TestObserver observer = new TestObserver(Chat.class);
-        chat.addObserver(observer);
+        TestListener listener = new TestListener();
+        chat.addPropertyChangeListener(listener);
 
         chat.removeUser(new User("None"));
 
-        assertFalse(observer.getCalled());
+        assertNull(listener.getEvent());
     }
 }

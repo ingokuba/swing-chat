@@ -1,27 +1,21 @@
 package dhbw.swingchat.instance;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 import com.google.gson.annotations.Expose;
-
-import dhbw.swingchat.helper.ChangeEvent;
 
 /**
  * Collection of all users and their names.
  */
-public class Chat extends Observable
-    implements Serializable
+public class Chat
+        extends ListenerSupport
 {
 
-    private static final long serialVersionUID = 1L;
-
     @Expose
-    private List<User>        users            = new ArrayList<>();
+    private List<User>  users  = new ArrayList<>();
     @Expose
-    private List<Group>       groups           = new ArrayList<>();
+    private List<Group> groups = new ArrayList<>();
 
     /**
      * Adds a new user to the collection.
@@ -30,8 +24,7 @@ public class Chat extends Observable
     {
         if (!users.contains(user)) {
             users.add(user);
-            setChanged();
-            notifyObservers(ChangeEvent.add(user));
+            firePropertyChange("users", null, user);
         }
         return this;
     }
@@ -42,8 +35,7 @@ public class Chat extends Observable
     public Chat removeUser(User user)
     {
         if (users.remove(user)) {
-            setChanged();
-            notifyObservers(ChangeEvent.remove(user));
+            firePropertyChange("users", user, null);
         }
         return this;
     }
@@ -86,8 +78,7 @@ public class Chat extends Observable
     public Chat addGroup(Group group)
     {
         groups.add(group);
-        setChanged();
-        notifyObservers(ChangeEvent.add(group));
+        firePropertyChange("groups", null, group);
         return this;
     }
 
@@ -97,8 +88,7 @@ public class Chat extends Observable
     public Chat removeGroup(Group group)
     {
         if (groups.remove(group)) {
-            setChanged();
-            notifyObservers(ChangeEvent.remove(group));
+            firePropertyChange("groups", group, null);
         }
         return this;
     }

@@ -2,28 +2,22 @@ package dhbw.swingchat.instance;
 
 import static java.util.Objects.hash;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 import com.google.gson.annotations.Expose;
-
-import dhbw.swingchat.helper.ChangeEvent;
 
 /**
  * User object identified by it's name.
  */
-public class User extends Observable
-    implements Serializable
+public class User
+        extends ListenerSupport
 {
 
-    private static final long serialVersionUID = 1L;
-
     @Expose
-    private List<String>      messages         = new ArrayList<>();
+    private List<String> messages = new ArrayList<>();
     @Expose
-    private String            name;
+    private String       name;
 
     public User(String name)
     {
@@ -41,8 +35,7 @@ public class User extends Observable
     public User message(String message)
     {
         messages.add(message);
-        setChanged();
-        notifyObservers(ChangeEvent.add(message));
+        firePropertyChange("messages", null, message);
         return this;
     }
 
