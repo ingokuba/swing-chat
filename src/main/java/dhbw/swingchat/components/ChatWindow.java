@@ -2,6 +2,7 @@ package dhbw.swingchat.components;
 
 import static dhbw.swingchat.helper.ChangeMode.ADD;
 import static dhbw.swingchat.helper.MessageUtil.showWarning;
+import static dhbw.swingchat.storage.Storage.getPngImage;
 import static javax.swing.JOptionPane.showInputDialog;
 
 import java.awt.Color;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -192,7 +192,7 @@ public class ChatWindow extends ThemedJFrame
         this.messageList.setBackground(chatColor);
 
         String imageName = this.getDarkModeBoolean() ? "light" : "dark";
-        Image themeIcon = getPNGImageNamed(imageName);
+        Image themeIcon = getPngImage(imageName);
 
         String name = this.getDarkModeBoolean() ? "Light Mode" : "Dark Mode";
 
@@ -245,22 +245,13 @@ public class ChatWindow extends ThemedJFrame
             }
         });
         add(addGroup);
-        Image groupIcon = getPNGImageNamed("group_add");
+        Image groupIcon = getPngImage("group_add");
         if (groupIcon != null) {
             addGroup.setIcon(new ImageIcon(groupIcon.getScaledInstance(50, 50, Image.SCALE_DEFAULT)));
             addGroup.setToolTipText("New group");
         }
         else {
             addGroup.setText("New group");
-        }
-    }
-
-    public Image getPNGImageNamed(String imageName)
-    {
-        try {
-            return ImageIO.read(getClass().getResource("/img/" + imageName + ".png"));
-        } catch (Exception ex) {
-            return null;
         }
     }
 

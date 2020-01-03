@@ -1,5 +1,6 @@
 package dhbw.swingchat.storage;
 
+import static dhbw.swingchat.storage.Storage.getPngImage;
 import static dhbw.swingchat.storage.Storage.loadChat;
 import static dhbw.swingchat.storage.Storage.storeChat;
 import static org.hamcrest.Matchers.contains;
@@ -60,5 +61,17 @@ public class StorageTest
         assertThat(user, notNullValue());
         assertThat(user.getMessages(), hasSize(1));
         assertThat(chat.getGroups(), contains(hasProperty("name", is("Group"))));
+    }
+
+    @Test
+    public void should_find_image()
+    {
+        assertThat(getPngImage("group_add"), notNullValue());
+    }
+
+    @Test
+    public void should_return_null_if_image_not_found()
+    {
+        assertThat(getPngImage("xyz"), nullValue());
     }
 }
