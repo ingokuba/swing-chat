@@ -40,13 +40,13 @@ Furthermore, this project uses a few open source image icons to make this applic
  The `Chat`, `Group` and `User` can be serialized to and deserialized from JSON. The files are stored in the project's root folder or from where the jar was executed.
 
 ### Design Patterns
- The `Chat` and `User` are observable objects, implemented with the interface `PropertyChangeListener`. The `ClientWindow` object uses this Observer pattern to react to changes in the objects. With this solution the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple so-called 'listeners' can be registered on one object. [3]
+ The `Chat` and `User` are observable objects, implemented with the interface `PropertyChangeListener`. The client `ChatWindow` object uses this Observer pattern to react to changes in these objects. With this solution that the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple so-called 'listeners' can be registered on one object. [3]
 
 All POJOs are designed following the Fluent Interface design pattern. This means that all setters and other methods return a new instance of themselves instead of `void`. This was done so method calls can be chained to make the code more readable. [4]
 
 # Testing
 
-The project is built with Maven which makes it faster to manage dependencies and plugins automatically. Maven was used to run the tests, check the test coverage and run code quality checks on the project. The build is executed on a virtual Ubuntu machine in CircleCI which is a build platform that can be integrated into a GitHub repository. The configuration for the automatic build is located in [`.circleci/config.yml`](.circleci/config.yml). For each push to a branch in the repository a build is triggered. If a build fails it will be documented in the pull request and the changes will not be merged into the master branch. This is always a stable version of the application, meaning it was successfully tested in CircleCI.
+The project is built with Maven which makes it faster to manage dependencies and plugins automatically. Maven was used to run the tests, check the test coverage and run code quality checks on the project. The build is executed on a virtual Ubuntu machine in CircleCI which is a build platform that can be integrated into a GitHub repository. The configuration for the automatic build is located in [`.circleci/config.yml`](.circleci/config.yml). For each push to a branch in the repository a build is triggered. If a build fails it will be documented in the pull request and the changes will not be merged into the master branch. This branch always contains a stable version of the application, meaning it was successfully tested in CircleCI.
 
 ### Unit Tests
 
