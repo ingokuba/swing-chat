@@ -1,18 +1,19 @@
-[:de:](DOCUMENTATION_de.md)
+# [:de:](DOCUMENTATION_de.md)
+
 # Advanced Software Engineering Project (DHBW Stuttgart)
 ## A chat simulation
 
 
 # Content
-### 1. [What it does](#1)
-### 2. [Design](#design)
+### 1. [What it does](#What-it-does)
+### 2. [Design](#Design)
 ### 3. [Implementation](#Implementation)
-### 4. [Testing](#testing)
-### 5. [Sources](#5)
+### 4. [Testing](#Testing)
+### 5. [Sources](#Sources)
 
 -----
 
-# What it does <a name="1"><a/>
+# What it does
 
 This project demonstrates a chat application on one local computer. Once the project is built and started, there is a so called "Main Window". It provides a method for new users to join the chat. After inserting a name which is not yet taken by another user and confirmation, a new window will open, showing the chat client for the new user.
 Each client window has a list with all active users in the top left. The user of that window<sup>1</sup> can select who should receive the next message he/she sends.
@@ -38,8 +39,8 @@ Furthermore, this project uses a few open source image icons to make this applic
 # Implementation
  The `Chat`, `Group` and `User` can be serialized to and deserialized from JSON. The file is stored at the project's root or from where the jar was executed.
 
-### Design Patterns <a name="4"><a/>
- The `Chat` and `User` are observable objects. The client window object uses this observer pattern to react to changes in the objects. With this solution the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple observers can be registered on an object. [3]
+### Design Patterns
+ The `Chat` and `User` are observable objects, implemented with the interface `PropertyChangeListener`. The client window object uses this observer pattern to react to changes in the objects. With this solution the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple listeners can be registered on an object. [3]
 
 All POJOs are designed following the fluent interface design pattern. This means that all setters or other methods normally returning `void` return an instance of themselves. This has been done so method calls can be chained to make the code more readable. [4]
 
