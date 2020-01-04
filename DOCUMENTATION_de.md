@@ -1,4 +1,4 @@
-# [:gb:](DOCUMENTATION.md)
+# [:gb: / :us:](DOCUMENTATION.md)
 
 # Advanced Software Engineering Projekt (DHBW Stuttgart)
 ## Eine Chat Simulation
@@ -33,19 +33,19 @@ Die Benutzeroberfläche dieser Anwendung wurde in großen Teilen mit dem Java Sw
 
 Um das Design der Anwendung weiter zu verbessern, wurde MiG Layout benutzt, ein Open-Source-Layoutmanager für Java Swing. Er hilft, die Größe und Position von Objekten nach bestimmten Regeln dynamisch festzulegen. Dies ist zuverlässiger, leichter zu verstehen und vor allem hilft es, Fehler in der Benutzeroberfläche zu vermeiden. [2]
 
-Außerdem verwendet dieses Projekt einige Open-Source-Symbole, um die Anwendung benutzerfreundlicher und intuitiver zu gestalten. Zusätzlich wurde für jeden Chat-Teilnehmer eine Möglichkeit implementiert, das Aussehen der Benutzeroberfläche zwischen Hell- und Dunkelmodus zu wechseln. All dies hat keinen direkten Einfluss auf die Kernfunktionalität und wurde nur implementiert, um dem Benutzer das Verständnis und die Nutzung dieser Anwendung zu erleichtern.
+Außerdem verwendet dieses Projekt einige Open-Source-Symbole, um die Anwendung benutzerfreundlicher und intuitiver zu gestalten. Zusätzlich wurde für jeden Chatteilnehmer eine Möglichkeit implementiert, das Aussehen der Benutzeroberfläche zwischen Hell- und Dunkelmodus zu wechseln. All dies hat keinen direkten Einfluss auf die Kernfunktionalität und wurde nur implementiert, um dem Benutzer das Verständnis und die Nutzung dieser Anwendung zu erleichtern.
 
 # Implementierung
  Die Java-Objekte `Chat`, `Group` und `User` können zu JSON serialisiert und von JSON deserialisiert werden. Diese Datei wird im Projekt oder dort, von wo das Jar ausgeführt wurde, gespeichert.
 
 ### Design Patterns
- Der `Chat` und der `User` sind beobachtbare Objekte (observable), was durch das Interface `PropertyChangeListener` umgesetzt wurde. Das Clientfenster verwendet dieses "Observable" Design-Pattern, um auf Veränderungen der Objekte zu reagieren. Mit dieser Lösung lassen sich UI und Geschäftslogik einfach trennen, ohne sie eng miteinander zu verknüpfen. Außerdem können mehrere Listener auf einem Objekt registriert werden. [3]
+ Der `Chat` und der `User` sind beobachtbare Objekte (engl. observable), was durch das Interface `PropertyChangeListener` umgesetzt wurde. Das Clientfenster verwendet dieses "Observable" Design-Pattern, um auf Veränderungen der Objekte zu reagieren. Mit dieser Lösung lassen sich UI und Geschäftslogik einfach trennen, ohne sie eng miteinander zu verknüpfen. Außerdem können mehrere Listener auf einem Objekt registriert werden. [3]
 
-Alle Java-Objekte wurden nach dem "Fluent Interface" Design-Pattern entworfen. Das bedeutet, dass alle Setter oder andere Methoden, die normalerweise `void` zurückgeben, eine Instanz von sich selbst zurückgeben. Dies wurde getan, damit Methodenaufrufe verkettet werden können, um den Code lesbarer zu machen. [4]
+Alle Java-Objekte wurden nach dem "Fluent Interface" Designpattern entworfen. Das bedeutet, dass alle Setter oder andere Methoden, die normalerweise `void` zurückgeben, eine Instanz von sich selbst zurückgeben. Dies wurde getan, damit Methodenaufrufe verkettet werden können, um den Code lesbarer zu machen. [4]
 
 # Tests
 
-Das Projekt wird mit Maven gebaut, was es einfach macht Abhängigkeiten und Plugins zu verwalten. Maven wurde verwendet um die Tests durchzuführen, die Testabdeckung zu überprüfen und die Qualitätsprüfungen für den Code des Projekts durchzuführen. Der Build wird auf einer virtuellen Ubuntu Maschine in CircleCI ausgeführt, welches eine Build Plattform ist, die einfach in ein GitHub Repository integriert werden kann. Die Konfiguration für den automatischen Build befindet sich in [`.circleci/config.yml`](.circleci/config.yml). Für jeden Push eines Branches in das Repository wird ein Build ausgelöst. Ein fehlgeschlagener Build wird im Pull-Request dokumentiert und die Änderungen werden nicht in den Master-Branch übernommen, der immer eine stabile Version der Anwendung ohne Bugs ist.
+Das Projekt wird mit Maven gebaut, was es einfach macht Abhängigkeiten und Plugins zu verwalten. Maven wurde verwendet um die Tests durchzuführen, die Testabdeckung zu überprüfen und die Qualitätsprüfungen für den Code des Projekts durchzuführen. Der Build wird auf einer virtuellen Ubuntu Maschine in CircleCI ausgeführt, welches eine Build-Plattform ist, die einfach in ein GitHub Repository integriert werden kann. Die Konfiguration für den automatischen Build befindet sich in [`.circleci/config.yml`](.circleci/config.yml). Für jeden Push eines Branches in das Repository wird ein Build ausgelöst. Ein fehlgeschlagener Build wird im Pull-Request dokumentiert und die Änderungen werden nicht in den Masterbranch übernommen, der immer eine stabile Version der Anwendung ohne Bugs ist.
 
 ### Unit-Tests
 
@@ -55,7 +55,7 @@ Jedoch reicht Testabdeckung allein nicht aus. Darüber hinaus müssen Testmethod
 
 ### Oberflächentests
 
-Die Use Cases der Oberfläche werden in Integrationstests getestet, die Java-Klassen enden hierbei mit `IT` (Integrations-Test). Die Ausführung der Swing-Anwendung erfolgt mit einem Framework namens `assertj`, das Komponenten der Oberfläch wrapped, so dass mit ihnen interagiert werden kann. Es unterstützt auch Assertions an sich, die beim Schreiben der Tests nur selten verwendet wurden, da der Schwerpunkt auf JUnit-Assertions lag.
+Die Use Cases der Oberfläche werden in Integrationstests getestet, die Javaklassen enden hierbei mit `IT` (Integrations-Test). Die Ausführung der Swing-Anwendung erfolgt mit einem Framework namens `assertj`, das Komponenten der Oberfläch wrapped, so dass mit ihnen interagiert werden kann. Es unterstützt auch Assertions an sich, die beim Schreiben der Tests nur selten verwendet wurden, da der Schwerpunkt auf JUnit-Assertions lag.
 
 ### Sonar
 
