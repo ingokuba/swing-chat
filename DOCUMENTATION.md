@@ -37,12 +37,12 @@ To further improve the design of the application it was decided to use MiG Layou
 Furthermore, this project uses a few open source image icons to make this application more user-friendly and intuitive. In addition, an option was implemented for each chat participant to change the theme of the user interface between light-mode and dark-mode. All this has no direct effect on the core-functionality and was just implemented to help the user understand and use this application.
 
 # Implementation
- The `Chat`, `Group` and `User` can be serialized to and deserialized from JSON. The files are stored in the project's root folder or from where the jar was executed.
+ The `Chat`, `Group` and `User` can be serialized to and deserialized from JSON. The file is stored in the project's root folder or from where the jar was executed.
 
 ### Design Patterns
- The `Chat` and `User` are observable objects, implemented with the interface `PropertyChangeListener`. The client `ChatWindow` object uses this Observer pattern to react to changes in these objects. With this solution that the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple so-called 'listeners' can be registered on one object. [3]
+ The `Chat` and `User` are observable objects, implemented with the interface `PropertyChangeListener`. The client `ChatWindow` object uses this Observer pattern to react to changes in these objects. With this solution the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple so-called 'listeners' can be registered on one object. [3]
 
-All POJOs are designed following the Fluent Interface design pattern. This means that all setters and other methods return a new instance of themselves instead of `void`. This was done so method calls can be chained to make the code more readable. [4]
+All POJOs are designed following the Fluent Interface design pattern. This means that all setters and other methods return an instance of themselves instead of `void`. This was done so method calls can be chained to make the code more readable. [4]
 
 # Testing
 
@@ -56,13 +56,11 @@ But test coverage alone is not sufficient. On top of that, test methods have to 
 
 ### UI Tests
 
-Use cases of the UI are tested in integration tests, Java classes like these end with `IT` (Integration Test). The running of the swing application is done with a framework called `assertj` which wraps UI components, so they can be interacted with. It also supports assertions by itself. However, they were rareley used when writing the test, because the focus was on JUnit assertions.
+Use cases of the UI are tested in integration tests, the test classes like end with `IT` (Integration Test). The running of the swing application is done with a framework called `assertj` which wraps UI components, so they can be interacted with. It also supports assertions by itself. However, they were rareley used when writing the test, because the focus was on JUnit assertions.
 
 ### Sonar
 
-To check for bugs, code smells and vulnerabilities the code is checked with Sonar to ensure code quality: 
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ingokuba_swing-chat&metric=alert_status)](https://sonarcloud.io/dashboard?id=ingokuba_swing-chat)
+To check for bugs, code smells and vulnerabilities the code is checked with Sonar to ensure code quality: [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ingokuba_swing-chat&metric=alert_status)](https://sonarcloud.io/dashboard?id=ingokuba_swing-chat)
 
 
 # Sources
