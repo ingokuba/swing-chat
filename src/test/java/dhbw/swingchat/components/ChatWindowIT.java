@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-import java.awt.Dialog;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -19,14 +18,13 @@ import javax.swing.JList;
 
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
-import org.assertj.swing.exception.WaitTimedOutError;
-import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
+import org.assertj.swing.fixture.JCheckBoxFixture;
+import org.assertj.swing.fixture.JListFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +34,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import dhbw.swingchat.helper.ThemedColors;
 import dhbw.swingchat.instance.Chat;
+import dhbw.swingchat.instance.Group;
 import dhbw.swingchat.instance.User;
 
 /**
@@ -47,10 +46,16 @@ import dhbw.swingchat.instance.User;
 public class ChatWindowIT
 {
 
-    private FrameFixture chatWindow;
+    static final String         NEW_GROUP_BUTTON    = "newGroup";
+    private static final String MESSAGES_LIST       = "messages";
+    private static final String CHAT_INPUT          = "userInput";
+    private static final String CHANGE_THEME_BUTTON = "changeTheme";
 
-    private User         user = new User("Chatter");
-    private Chat         chat = new Chat().addUser(user).addUser(new User("Second"));
+    private FrameFixture        chatWindow;
+
+    private User                user                = new User("Chatter");
+    private User                user2               = new User("Second");
+    private Chat                chat                = new Chat().addUser(user).addUser(user2);
 
     @BeforeClass
     public static void mock()
@@ -96,37 +101,38 @@ public class ChatWindowIT
     @SuppressWarnings("unchecked")
     public void should_add_message_to_list()
     {
-        chatWindow.textBox("userInput").enterText("Test message").pressAndReleaseKeys(VK_ENTER);
+        chatWindow.textBox(CHAT_INPUT).enterText("Test message").pressAndReleaseKeys(VK_ENTER);
 
-        chatWindow.list("messages").requireItemCount(1);
-        JList<String> messageList = chatWindow.list("messages").target();
+        JListFixture listFixture = chatWindow.list(MESSAGES_LIST);
+        listFixture.requireItemCount(1);
+        JList<String> messageList = listFixture.target();
         assertThat(messageList.getModel().getElementAt(0), containsString("Test message"));
-        chatWindow.textBox("userInput").requireText("");
+        chatWindow.textBox(CHAT_INPUT).requireText("");
     }
 
     @Test
     public void should_not_add_empty_message_to_list()
     {
-        chatWindow.textBox("userInput").pressAndReleaseKeys(VK_ENTER);
+        chatWindow.textBox(CHAT_INPUT).pressAndReleaseKeys(VK_ENTER);
 
-        chatWindow.list("messages").requireItemCount(0);
+        chatWindow.list(MESSAGES_LIST).requireItemCount(0);
         assertThat(user.getMessages(), hasSize(0));
     }
 
     @Test
     public void should_not_add_message_to_list_for_deselected_user()
     {
-        chatWindow.checkBox("Chatter").uncheck();
+        chatWindow.checkBox(user.getName()).uncheck();
 
-        chatWindow.textBox("userInput").enterText("Test message").pressAndReleaseKeys(VK_ENTER);
+        chatWindow.textBox(CHAT_INPUT).enterText("Test message").pressAndReleaseKeys(VK_ENTER);
 
-        chatWindow.list("messages").requireItemCount(0);
+        chatWindow.list(MESSAGES_LIST).requireItemCount(0);
     }
 
     @Test
     public void should_create_group()
     {
-        chatWindow.button("newGroup").click();
+        chatWindow.button(NEW_GROUP_BUTTON).click();
 
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
@@ -137,10 +143,10 @@ public class ChatWindowIT
     @Test
     public void should_not_create_group_without_users()
     {
-        chatWindow.checkBox("Chatter").uncheck();
-        chatWindow.checkBox("Second").uncheck();
+        chatWindow.checkBox(user.getName()).uncheck();
+        chatWindow.checkBox(user2.getName()).uncheck();
 
-        chatWindow.button("newGroup").click();
+        chatWindow.button(NEW_GROUP_BUTTON).click();
 
         assertThat(chat.getGroups(), hasSize(0));
         chatWindow.dialog().label(withText("Group cannot be empty")).requireVisible();
@@ -149,7 +155,7 @@ public class ChatWindowIT
     @Test
     public void should_not_create_group_without_name()
     {
-        chatWindow.button("newGroup").click();
+        chatWindow.button(NEW_GROUP_BUTTON).click();
 
         chatWindow.dialog().button(JButtonMatcher.withText("OK")).click();
 
@@ -160,24 +166,19 @@ public class ChatWindowIT
     @Test
     public void should_not_create_group_with_null_name()
     {
-        chatWindow.button("newGroup").click();
+        chatWindow.button(NEW_GROUP_BUTTON).click();
 
         chatWindow.dialog().close();
 
         assertThat(chat.getGroups(), hasSize(0));
-
-        Assertions.assertThrows(WaitTimedOutError.class, () -> {
-            WindowFinder.findDialog(Dialog.class).withTimeout(100).using(chatWindow.robot());
-        });
     }
 
     @Test
     public void should_not_create_group_with_same_name_and_members()
     {
-        chatWindow.button("newGroup").click();
-        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
+        chat.addGroup(new Group("Groupie", chat.getUsers()));
 
-        chatWindow.button("newGroup").click();
+        chatWindow.button(NEW_GROUP_BUTTON).click();
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
 
         assertThat(chat.getGroups(), hasSize(1));
@@ -187,8 +188,8 @@ public class ChatWindowIT
     @Test
     public void should_remove_group_on_close()
     {
-        chatWindow.checkBox("Second").click();
-        chatWindow.button("newGroup").click();
+        chatWindow.checkBox(user2.getName()).click();
+        chatWindow.button(NEW_GROUP_BUTTON).click();
         chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
         assertThat(chat.getGroups(), hasSize(1));
 
@@ -200,10 +201,7 @@ public class ChatWindowIT
     @Test
     public void should_not_remove_group_on_close_if_user_not_in_it()
     {
-        chatWindow.checkBox(user.getName()).click();
-        chatWindow.button("newGroup").click();
-        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
-        assertThat(chat.getGroups(), hasSize(1));
+        chat.addGroup(new Group("Groupie", user2));
 
         chatWindow.close();
 
@@ -213,34 +211,32 @@ public class ChatWindowIT
     @Test
     public void should_select_users_in_group()
     {
-        chatWindow.checkBox("Second").click();
-        chatWindow.button("newGroup").click();
-        chatWindow.dialog().textBox().enterText("Groupie").pressAndReleaseKeys(VK_ENTER);
+        chat.addGroup(new Group("Groupie", user));
 
-        chatWindow.checkBox("Chatter").click();
+        JCheckBoxFixture chatterCheckBox = chatWindow.checkBox(user.getName()).click();
         chatWindow.toggleButton("Groupie").click();
 
-        chatWindow.checkBox("Chatter").requireSelected();
-        chatWindow.checkBox("Second").requireNotSelected();
+        chatterCheckBox.requireSelected();
+        chatWindow.checkBox(user2.getName()).requireNotSelected();
     }
 
     @Test
     public void should_change_to_darkmode()
     {
-        chatWindow.button("changeTheme").click();
-        assertThat(chatWindow.list("messages").background().target(), is(ThemedColors.darkSecondary));
+        chatWindow.button(CHANGE_THEME_BUTTON).click();
+        assertThat(chatWindow.list(MESSAGES_LIST).background().target(), is(ThemedColors.darkSecondary));
     }
 
     @Test
     public void should_have_button_icon()
     {
-        assertThat(chatWindow.button("newGroup").target().getIcon(), notNullValue());
+        assertThat(chatWindow.button(NEW_GROUP_BUTTON).target().getIcon(), notNullValue());
     }
 
     @org.junit.Test
     public void should_have_button_label_when_image_cannot_be_loaded()
         throws IOException
     {
-        assertThat(chatWindow.button("newGroup").target().getText(), is("New group"));
+        assertThat(chatWindow.button(NEW_GROUP_BUTTON).target().getText(), is("New group"));
     }
 }

@@ -5,8 +5,15 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.junit.jupiter.api.BeforeEach;
+
 public class TestUtil
 {
+
+    /**
+     * Tag for test method to indicate whether {@link BeforeEach} method should be skipped.
+     */
+    public static final String SKIP_BEFORE_EACH = "SkipBeforeEach";
 
     private TestUtil()
     {
