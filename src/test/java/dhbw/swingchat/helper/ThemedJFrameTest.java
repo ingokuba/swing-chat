@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import java.awt.Button;
 import java.awt.Container;
 
 import javax.swing.JButton;
@@ -66,6 +67,15 @@ public class ThemedJFrameTest
     @Test
     public void should_update_frame()
     {
+        populate_frame();
+
+        assertDoesNotThrow(() -> frame.updateFrame());
+    }
+
+    @Test
+    public void should_update_frame_for_component_thats_not_container()
+    {
+        frame.add(new Button());
         populate_frame();
 
         assertDoesNotThrow(() -> frame.updateFrame());
