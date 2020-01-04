@@ -26,6 +26,12 @@ jobs:
       steps:
       - checkout
       -  run: mvn verify sonar:sonar -DskipTests -Dsonar.branch.name=${CIRCLE_BRANCH}
+   vulnerability:
+      docker:
+      -  image: circleci/openjdk:11-jdk
+      steps:
+      - checkout
+      -  run: mvn org.owasp:dependency-check-maven:5.2.4:check -DfailBuildOnAnyVulnerability=true
 workflows:
    main:
       jobs:
@@ -34,3 +40,13 @@ workflows:
             context: SonarCloud
             requires:
             - build
+   nightly:
+      triggers:
+      -  schedule:
+            cron: 0 0 * * *
+            filters:
+               branches:
+                  only:
+                  - master
+      jobs:
+      - vulnerability
