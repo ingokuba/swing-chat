@@ -384,7 +384,7 @@ public class ChatWindow extends ThemedJFrame
             if (eventObject instanceof String) {
                 messages.addElement((String)eventObject);
             }
-            else if (eventObject instanceof User) {
+            if (eventObject instanceof User) {
                 userPanel.setVisible(false);
                 User eventUser = (User)eventObject;
                 if (event.getMode() == ADD) {
@@ -396,7 +396,7 @@ public class ChatWindow extends ThemedJFrame
                 }
                 userPanel.setVisible(true);
             }
-            else if (eventObject instanceof Group) {
+            if (eventObject instanceof Group) {
                 groupPanel.setVisible(false);
                 Group group = (Group)eventObject;
                 if (event.getMode() == ADD) {
