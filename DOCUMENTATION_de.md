@@ -1,18 +1,19 @@
-[:gb:](DOCUMENTATION.md)
+# [:gb:](DOCUMENTATION.md)
+
 # Advanced Software Engineering Projekt (DHBW Stuttgart)
 ## Eine Chat Simulation
 
 
 # Inhalt
-### 1. [Funktion](#1)
-### 2. [Design](#design)
-### 3. [Implementierung](#Implementation)
-### 4. [Tests](#testing)
-### 5. [Quellen](#5)
+### 1. [Funktion](#Funktion)
+### 2. [Design](#Design)
+### 3. [Implementierung](#Implementierung)
+### 4. [Tests](#Tests)
+### 5. [Quellen](#Quellen)
 
 -----
 
-# Funktion <a name="1"><a/>
+# Funktion
 
 Dieses Projekt demonstriert eine Chat-Anwendung auf einem lokalen Computer. Sobald das Projekt gebaut und gestartet wurde, erscheint ein sogenanntes "Hauptfenster". Es bietet eine Funktion, womit neue Benutzer dem Chat beitreten können. Nach Eingabe eines Namens, der noch nicht von einem anderen Benutzer übernommen wurde, und Bestätigung öffnet sich ein neues Fenster, das den Chat-Client für den neuen Benutzer anzeigt.
 
@@ -37,8 +38,8 @@ Außerdem verwendet dieses Projekt einige Open-Source-Symbole, um die Anwendung 
 # Implementierung
  Die Java-Objekte `Chat`, `Group` und `User` können zu JSON serialisiert und von JSON deserialisiert werden. Diese Datei wird im Projekt oder dort, von wo das Jar ausgeführt wurde, gespeichert.
 
-### Design Patterns <a name="4"><a/>
- Der `Chat` und der `User` sind beobachtbare Objekte (observable). Das Clientfenster verwendet dieses "Observable" Design-Pattern, um auf Veränderungen der Objekte zu reagieren. Mit dieser Lösung lassen sich UI und Geschäftslogik einfach trennen, ohne sie eng miteinander zu verknüpfen. Außerdem können mehrere Observer auf einem Objekt registriert werden. [3]
+### Design Patterns
+ Der `Chat` und der `User` sind beobachtbare Objekte (observable), was durch das Interface `PropertyChangeListener` umgesetzt wurde. Das Clientfenster verwendet dieses "Observable" Design-Pattern, um auf Veränderungen der Objekte zu reagieren. Mit dieser Lösung lassen sich UI und Geschäftslogik einfach trennen, ohne sie eng miteinander zu verknüpfen. Außerdem können mehrere Listener auf einem Objekt registriert werden. [3]
 
 Alle Java-Objekte wurden nach dem "Fluent Interface" Design-Pattern entworfen. Das bedeutet, dass alle Setter oder andere Methoden, die normalerweise `void` zurückgeben, eine Instanz von sich selbst zurückgeben. Dies wurde getan, damit Methodenaufrufe verkettet werden können, um den Code lesbarer zu machen. [4]
 
