@@ -37,30 +37,30 @@ To further improve the design of the application it was decided to use MiG Layou
 Furthermore, this project uses a few open source image icons to make this application more user-friendly and intuitive. In addition, an option was implemented for each chat participant to change the theme of the user interface between light-mode and dark-mode. All this has no direct effect on the core-functionality and was just implemented to help the user understand and use this application.
 
 # Implementation
- The `Chat`, `Group` and `User` can be serialized to and deserialized from JSON. The file is stored at the project's root or from where the jar was executed.
+ The `Chat`, `Group` and `User` can be serialized to and deserialized from JSON. The files are stored in the project's root folder or from where the jar was executed.
 
 ### Design Patterns
- The `Chat` and `User` are observable objects, implemented with the interface `PropertyChangeListener`. The client window object uses this observer pattern to react to changes in the objects. With this solution the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple listeners can be registered on an object. [3]
+ The `Chat` and `User` are observable objects, implemented with the interface `PropertyChangeListener`. The `ClientWindow` object uses this Observer pattern to react to changes in the objects. With this solution the UI and business logic can be separated easily without tightly coupling them. Furthermore multiple so-called 'listeners' can be registered on one object. [3]
 
-All POJOs are designed following the fluent interface design pattern. This means that all setters or other methods normally returning `void` return an instance of themselves. This has been done so method calls can be chained to make the code more readable. [4]
+All POJOs are designed following the Fluent Interface design pattern. This means that all setters and other methods return a new instance of themselves instead of `void`. This was done so method calls can be chained to make the code more readable. [4]
 
 # Testing
 
-The project is built with maven which makes it easy to manage dependencies and plugins. Maven was used to run the tests, check the test coverage and run code quality checks on the project. The build is executed on a virtual Ubuntu machine in CircleCI which is a build platform that can be integrated into a GitHub repository easily. The configuration for the automatic build is located in [`.circleci/config.yml`](.circleci/config.yml). For each push of a branch to the repository a build is triggered. A failing build will be documented in the pull request and the changes will not be merged into the master branch, which is always a stable version of the application without bugs.
+The project is built with Maven which makes it faster to manage dependencies and plugins automatically. Maven was used to run the tests, check the test coverage and run code quality checks on the project. The build is executed on a virtual Ubuntu machine in CircleCI which is a build platform that can be integrated into a GitHub repository. The configuration for the automatic build is located in [`.circleci/config.yml`](.circleci/config.yml). For each push to a branch in the repository a build is triggered. If a build fails it will be documented in the pull request and the changes will not be merged into the master branch. This is always a stable version of the application, meaning it was successfully tested in CircleCI.
 
 ### Unit Tests
 
-All classes not related to UI have been covered by unit tests running with JUnit 5. Test classes are identified by maven with the file ending `Test`, which is a maven naming convention. The code to test ratio can be seen here: [![codecov](https://codecov.io/gh/ingokuba/swing-chat/branch/master/graph/badge.svg)](https://codecov.io/gh/ingokuba/swing-chat)
+All classes not related to the UI have been covered by unit tests running with JUnit 5. Test classes are identified by Maven with the file ending `Test`, which is a Maven naming convention. The code to test ratio can be seen here: [![codecov](https://codecov.io/gh/ingokuba/swing-chat/branch/master/graph/badge.svg)](https://codecov.io/gh/ingokuba/swing-chat)
 
-But test coverage alone is not sufficient. On top of that test methods have to be able to run indepentently and not change the state of the application. This is ensured by cleaning the test base after each test, e.g. when a file is stored in a test it has to be deleted afterwards, regardless if the test failed.
+But test coverage alone is not sufficient. On top of that, test methods have to be able to run indepentently and not change the state of the application. This is ensured by cleaning the test base after each test, e.g. when a file is stored in a test it has to be deleted afterwards, regardless whether the test failed or not.
 
 ### UI Tests
 
-Use cases of the UI are tested in integration tests, the Java classes end with `IT` (Integration Test). The running of the swing application is done with a framework called `assertj` which wraps UI components, so they can be interacted with. It also supports assertions by itself, which were seldom used when writing the test, because the focus was on JUnit assertions.
+Use cases of the UI are tested in integration tests, Java classes like these end with `IT` (Integration Test). The running of the swing application is done with a framework called `assertj` which wraps UI components, so they can be interacted with. It also supports assertions by itself. However, they were rareley used when writing the test, because the focus was on JUnit assertions.
 
 ### Sonar
 
-To check bugs, code smells and vulnerability the code is checked with Sonar to ensure code quality: 
+To check for bugs, code smells and vulnerabilities the code is checked with Sonar to ensure code quality: 
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ingokuba_swing-chat&metric=alert_status)](https://sonarcloud.io/dashboard?id=ingokuba_swing-chat)
 
