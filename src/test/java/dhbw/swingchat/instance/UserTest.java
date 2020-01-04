@@ -3,15 +3,16 @@ package dhbw.swingchat.instance;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+import java.beans.PropertyChangeEvent;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dhbw.swingchat.helper.ChangeEvent;
-import dhbw.swingchat.helper.ChangeMode;
-import dhbw.swingchat.test.TestObserver;
+import dhbw.swingchat.test.TestListener;
 
 /**
  * Unit tests for the {@link User} object.
@@ -28,18 +29,19 @@ public class UserTest
     }
 
     @Test
-    public void should_notify_observer_when_message_added()
+    public void should_notify_listener_when_message_added()
     {
-        TestObserver observer = new TestObserver(User.class);
-        user.addObserver(observer);
+        TestListener listener = new TestListener();
+        user.addPropertyChangeListener(listener);
 
         String message = "Test message";
         user.message(message);
 
-        assertTrue(observer.getCalled());
-        ChangeEvent event = (ChangeEvent)observer.getObject();
-        assertThat(event.getMode(), is(ChangeMode.ADD));
-        assertThat(event.getObject(), is(message));
+        PropertyChangeEvent event = listener.getEvent();
+        assertNotNull(event);
+        assertThat(event.getPropertyName(), is("messages"));
+        assertThat(event.getOldValue(), nullValue());
+        assertThat(event.getNewValue(), is(message));
     }
 
     @Test

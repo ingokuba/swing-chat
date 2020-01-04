@@ -1,6 +1,5 @@
 package dhbw.swingchat.components;
 
-import static dhbw.swingchat.helper.ChangeMode.ADD;
 import static dhbw.swingchat.helper.MessageUtil.showWarning;
 import static dhbw.swingchat.storage.Storage.getPngImage;
 import static javax.swing.JOptionPane.showInputDialog;
@@ -11,10 +10,10 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
@@ -28,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
-import dhbw.swingchat.helper.ChangeEvent;
 import dhbw.swingchat.helper.ThemedJFrame;
 import dhbw.swingchat.instance.Chat;
 import dhbw.swingchat.instance.Group;
@@ -43,8 +41,8 @@ public class ChatWindow extends ThemedJFrame
 
     private static final long        serialVersionUID = 1L;
 
-    private User                     user;
-    private Chat                     chat;
+    private transient User           user;
+    private transient Chat           chat;
 
     private JPanel                   userPanel;
     private JPanel                   groupPanel;
@@ -64,9 +62,9 @@ public class ChatWindow extends ThemedJFrame
     {
         setLayout(new MigLayout("fill"));
         this.user = user1;
-        this.user.addObserver(new ChatObserver());
+        this.user.addPropertyChangeListener(new UserListener());
         this.chat = chat1;
-        this.chat.addObserver(new ChatObserver());
+        this.chat.addPropertyChangeListener(new ChatListener());
         userPanel = new JPanel(new MigLayout());
         addUsers();
         add(userPanel);
@@ -370,37 +368,48 @@ public class ChatWindow extends ThemedJFrame
     }
 
     /**
-     * Reacts to changes in the chat and user objects.
+     * Reacts to changes in the user object.
      */
-    private class ChatObserver
-        implements Observer
+    private class UserListener
+        implements PropertyChangeListener
     {
 
         @Override
-        public void update(Observable o, Object obj)
+        public void propertyChange(PropertyChangeEvent event)
         {
-            ChangeEvent event = (ChangeEvent)obj;
-            Object eventObject = event.getObject();
-            if (eventObject instanceof String) {
-                messages.addElement((String)eventObject);
-            }
-            else if (eventObject instanceof User) {
+            String message = String.valueOf(event.getNewValue());
+            messages.addElement(message);
+        }
+    }
+
+    /**
+     * Reacts to changes in the chat object.
+     */
+    private class ChatListener
+        implements PropertyChangeListener
+    {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            String property = event.getPropertyName();
+            if ("users".equalsIgnoreCase(property)) {
                 userPanel.setVisible(false);
-                User eventUser = (User)eventObject;
-                if (event.getMode() == ADD) {
-                    addUser(eventUser);
+                User oldUser = (User)event.getOldValue();
+                if (oldUser == null) {
+                    addUser((User)event.getNewValue());
                     updateFrame();
                 }
                 else {
-                    removeUser(eventUser);
+                    removeUser(oldUser);
                 }
                 userPanel.setVisible(true);
             }
-            else if (eventObject instanceof Group) {
+            if ("groups".equalsIgnoreCase(property)) {
                 groupPanel.setVisible(false);
-                Group group = (Group)eventObject;
-                if (event.getMode() == ADD) {
-                    addGroup(group);
+                Group group = (Group)event.getOldValue();
+                if (group == null) {
+                    addGroup((Group)event.getNewValue());
                     updateFrame();
                 }
                 else {
