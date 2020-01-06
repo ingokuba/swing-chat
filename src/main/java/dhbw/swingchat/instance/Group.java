@@ -4,22 +4,18 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.hash;
 import static java.util.stream.Collectors.joining;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
 public class Group
-    implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
-
     @Expose
-    private String            name;
+    private String     name;
     @Expose
-    private List<User>        users;
+    private List<User> users;
 
     public Group(String name, List<User> users)
     {

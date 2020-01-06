@@ -34,7 +34,7 @@ public class MainWindow extends JFrame
     private JTextField        username;
     private List<ChatWindow>  chatWindows      = new ArrayList<>();
 
-    private Chat              chat             = new Chat();
+    private transient Chat    chat             = new Chat();
 
     /**
      * Build the main window of the chat application.
